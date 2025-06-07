@@ -951,7 +951,11 @@ main {
   100% { transform: scale(1); }
 }
 
-.project-item > a { width: 100%; }
+.project-item {
+    max-width: 584px; /* совпадает с размером картинки */
+    margin-left: auto;
+    margin-right: auto;
+}
 
 .project-img {
   position: relative;
