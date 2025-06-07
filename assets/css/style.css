@@ -771,7 +771,17 @@ main {
  * education and experience 
  */
 
-.timeline { margin-bottom: 30px; }
+.timeline {
+    margin-bottom: 30px;
+    margin-top: 30px; /* увеличь число если нужно больше отступа */
+}
+.awards-photo-link {
+    margin-left: 5px; /* Можно увеличить или уменьшить отступ */
+    margin-top: 18px; /* Чтобы был отступ сверху */
+    list-style: none; /* Убрать точку, если надо */
+    display: flex;
+    align-items: center;
+}
 
 .timeline .title-wrapper {
   display: flex;
