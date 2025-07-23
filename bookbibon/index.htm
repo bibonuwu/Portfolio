@@ -56,20 +56,19 @@
     </div>
 
     <header class="academy-header">
-    <div class="d-flex justify-content-center bg-green font-size-14 text-gray-dark py-10">
-    <span class="mx-8">Кітап әлі шықпады бірақ алдын ала заказ берсеңіз болады</span>
-    
-</div>    <div class="academy-menu-main container px-0">
+        <div class="d-flex justify-content-center bg-green font-size-14 text-gray-dark py-10">
+            <span class="mx-8">Red Team & Bibon Team командалары ұсынған жаңа электронды кітап!</span>
+
+        </div>   <div class="academy-menu-main container px-0">
             <div class="navbar-wrapper-mobile"></div>
-        <nav class="navbar navbar-light navbar-expand-xl navbar-main py-32 z-index-9">
-        <a href="index.htm" class="logo">
-            <img src="images/logo.svg" alt="HTB Academy Logo" height="36">
-        </a>
-                 
-               
-    </nav>
-</div>
-</header>
+            <nav class="navbar navbar-light navbar-expand-xl navbar-main py-32 z-index-9 justify-content-center">
+                <a href="index.htm" class="logo mx-auto d-block">
+                    <img src="images/logo.svg" alt="HTB Academy Logo" height="36">
+                </a>
+            </nav>
+        </div>
+
+    </header>
     <main class="academy-content">
 
         <section class="academy-video">
@@ -88,13 +87,17 @@
                 <div class="row justify-content-center mb-32">
                     <div class="col-xxl-8 col-lg-9">
                         <p class="subtitle font-size-24-lg font-size-18">
-                            Дағдыларыңызды нұсқаулықпен жетілдіріп, салалық сертификаттар арқылы біліктілігіңізді дәлелдеңіз. Киберқауіпсіздік саласына дайын маман болыңыз.
+                            Кітап тек кибербез маманына және қызығушылық білдіретін жандарға сатылады.
                         </p>
                     </div>
                 </div>
                 <div class="row justify-content-center">
                     <button class="btn btn-main-gradient rounded mx-xs-0 ml-xxs-0 mx-16">
-                        <a href="register.html">Buy the book</a>
+                        <a href="#"
+                           class="btn btn-main-gradient rounded mx-xs-0 ml-xxs-0 mx-16"
+                           onclick="alert('Кітап әлі шыққан жоқ'); return false;">
+                            Buy the book
+                        </a>
                     </button>
                     <button class="btn btn-transparent rounded ml-xs-32 mt-xxs-0 mt-16">
                         <a href="academy-for-business.html">Watch the trailer</a>
@@ -112,13 +115,11 @@
                 <div class="row justify-content-center text-center">
                     <div class="col-12 mb-8">
                         <h3>
-                            What is the book about?
-
+                            Кітап не туралы?
                         </h3>
                     </div>
                     <div class="col-md-8 mb-32">
-                        <p class="font-size-20-lg font-size-18">Киберқауіпсіздік саласындағы болашағыңызға дайындалыңыз: интерактивті, нұсқаулы оқыту мен салалық сертификаттар арқылы біліміңізді жетілдіріңіз. Бәсекелестерден ерекшелену үшін қажетті дағдыларды үйреніңіз.</p>
-                    </div>
+                        <p class="font-size-20-lg font-size-18">Киберқауіпсіздік саласына керекті дағдыларды үйретіп қана қоймай өз мәліметіңізді қорғауға көмек береді. Яғни төмендегі негіздемелерді үйреніп шығасыз! </div>
                 </div>
                 <div class="row px-lg-24 px-0 mt-md-64 mt-16">
                     <div class="col-lg-4 col-md-6 d-flex align-items-stretch mb-24">
@@ -127,25 +128,23 @@
                 <div class="card-inner-front w-100">
                     <img class="img-fluid" src="/images/pages/front/ic-compass.svg" alt="">
                     <div class="card-body text-center px-16">
-                        <h3 class="card-title font-size-24-lg font-size-18 font-weight-bold color-white">OSINT, IP | JSON, OSI модель</h3>
-                        <p class="card-text font-size-16">For every skill level, from beginner to advanced</p>
+                        <h3 class="card-title font-size-24-lg font-size-18 font-weight-bold color-white">Құралдар мен жұмыс ортасы</h3>
+                        <p class="card-text font-size-16">Мұнда қауіпсіздікті тексеруге арналған бағдарламалар мен жүйелер жазылған:</p>
                     </div>
                 </div>
                 <div class="card-inner-back w-100 d-flex align-items-center justify-content-center">
                     <div class="card-text font-size-16 px-lg-24 px-16">
                         <ul class="list-dashed-content">
                             <li class="list-dashed-content-item">
-                                Shodan құрылғы іздеу
+                                Kali Linux жүйесімен танысу және орнатылуы
                             </li>
                             <li class="list-dashed-content-item">
-                                Maltego байланыс анализі
+                                VMware, Терминал – виртуалды машиналар мен командалық жол
                             </li>
                             <li class="list-dashed-content-item">
-                                ipinfo.io IP ақпарат
+                                Darknet сайттар тізімі және поисковиктер
                             </li>
-                            <li class="list-dashed-content-item">
-                                Wireshark трафик талдау
-                            </li>
+                           
                                                     </ul>
                     </div>
                 </div>
@@ -158,24 +157,25 @@
                 <div class="card-inner-front w-100">
                     <img class="img-fluid" src="/images/pages/front/ic-monitor.svg" alt="">
                     <div class="card-body text-center px-16">
-                        <h3 class="card-title font-size-24-lg font-size-18 font-weight-bold color-white">Antivirus, RAT</h3>
-                        <p class="card-text font-size-16">Tackle all lab exercises from your browser</p>
+                        <h3 class="card-title font-size-24-lg font-size-18 font-weight-bold color-white">IP, камералар және осал жүйелер</h3>
+                        <p class="card-text font-size-16">IP-адрестер мен желі құрылғылары жайлы ақпаратты қалай табуға болады:</p>
                     </div>
                 </div>
                 <div class="card-inner-back w-100 d-flex align-items-center justify-content-center">
                     <div class="card-text font-size-16 px-lg-24 px-16">
                         <ul class="list-dashed-content">
                             <li class="list-dashed-content-item">
-                                VirusTotal вирус тексеру
+                                OSINT – ашық деректерден ақпарат жинау
                             </li>
                             <li class="list-dashed-content-item">
-                                Malwarebytes зиянды софт
+                                IP тексеру қызметтері (edns, ipapi, cloudflare, т.б.)
                             </li>
                             <li class="list-dashed-content-item">
-                                Process Explorer процесс бақылау
+                                HikVision камералары, CVE – жүйедегі осалдықтар
                             </li>
                             <li class="list-dashed-content-item">
-BIBON V бағдарламасы                            </li>
+                                Exploit базалары, роутерлерді сканерлеу
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -188,26 +188,26 @@ BIBON V бағдарламасы                            </li>
                 <div class="card-inner-front w-100">
                     <img class="img-fluid" src="/images/pages/front/ic-pointer.svg" alt="">
                     <div class="card-body text-center px-16">
-                        <h3 class="card-title font-size-24-lg font-size-18 font-weight-bold color-white">DDOS, MITM, Wi-Fi</h3>
-                        <p class="card-text font-size-16">Practice in a real-world environment</p>
+                        <h3 class="card-title font-size-24-lg font-size-18 font-weight-bold color-white">Желілік шабуыл түрлері</h3>
+                        <p class="card-text font-size-16">Интернет арқылы жасалатын шабуыл әдістері:</p>
                     </div>
                 </div>
                 <div class="card-inner-back w-100 d-flex align-items-center justify-content-center">
                     <div class="card-text font-size-16 px-lg-24 px-16">
                         <ul class="list-dashed-content">
                             <li class="list-dashed-content-item">LOIC DDoS шабуыл</li>
+                           
                             <li class="list-dashed-content-item">
-                                Evil Twin фейк Wi-Fi
+                                MITM – "ортада тұрған адам" шабуылы
                             </li>
                             <li class="list-dashed-content-item">
-                                Aircrack-ng Wi-Fi бұзу
-
+                                ARP, DHCP Spoofing – желідегі деректерді алдау
                             </li>
                             <li class="list-dashed-content-item">
-                                Bettercap MITM шабуылы
+                                SSLStrip – шифрланған мәліметті бұзу
                             </li>
                             <li class="list-dashed-content-item">
-                                DoS Attack құралдары
+                                Фишинг – жалған сайтпен алдап, құпия сөзді ұрлаудан қорғану
                             </li>
                         </ul>
                     </div>
@@ -221,24 +221,21 @@ BIBON V бағдарламасы                            </li>
                 <div class="card-inner-front w-100">
                     <img class="img-fluid" src="/images/pages/front/ic-badge.svg" alt="">
                     <div class="card-body text-center px-16">
-                        <h3 class="card-title font-size-24-lg font-size-18 font-weight-bold color-white">HikVision, Brutforce</h3>
-                        <p class="card-text font-size-16">Stand out in the job market, skyrocket your resume</p>
+                        <h3 class="card-title font-size-24-lg font-size-18 font-weight-bold color-white">Антивирустар және қорғау</h3>
+                        <p class="card-text font-size-16">Компьютерлер мен жүйелерді қорғау құралдары:</p>
                     </div>
                 </div>
                 <div class="card-inner-back w-100 d-flex align-items-center justify-content-center">
                     <div class="card-text font-size-16 px-lg-24 px-16">
                         <ul class="list-dashed-content">
                             <li class="list-dashed-content-item">
-                                Angry IP Scanner IP сканер
+                                Windows Defender, Malwarebytes антивирус бағдарламалары
                             </li>
                             <li class="list-dashed-content-item">
-                                Hydra пароль іріктеу
+                                Компка сброс, жүйені дұрыс қайта қалпына келтіру
                             </li>
-                            <li class="list-dashed-content-item">Nmap порт сканерлеу</li>
-                            <li class="list-dashed-content-item">
-                                Cameradar камера іздеу
-
-                            </li>
+                            <li class="list-dashed-content-item">OSI модел деңгейлері</li>
+                         
 
                         </ul>
                     </div>
@@ -252,24 +249,24 @@ BIBON V бағдарламасы                            </li>
                 <div class="card-inner-front w-100">
                     <img class="img-fluid" src="/images/pages/front/ic-access.svg" alt="">
                     <div class="card-body text-center px-16">
-                        <h3 class="card-title font-size-24-lg font-size-18 font-weight-bold color-white">Darknet sites, Phishing</h3>
-                        <p class="card-text font-size-16">On-demand access from everywhere</p>
+                        <h3 class="card-title font-size-24-lg font-size-18 font-weight-bold color-white">WLAN желісі және брутфорс</h3>
+                        <p class="card-text font-size-16">Wi-Fi желісін бұзу және құпия сөздерді табу әдістері:</p>
                     </div>
                 </div>
                 <div class="card-inner-back w-100 d-flex align-items-center justify-content-center">
                     <div class="card-text font-size-16 px-lg-24 px-16">
                         <ul class="list-dashed-content">
                             <li class="list-dashed-content-item">
-                                Tor Browser даркнет кіру
+                                Handshake – Wi-Fi қосылу сигналын ұстап қалу
                             </li>
                             <li class="list-dashed-content-item">
-                                Ahmia Tor іздеу
+                                Brute-force – парольді біртіндеп guessing арқылы табу
                             </li>
                             <li class="list-dashed-content-item">
-                                Gophish фишинг құралы
+                                WPA2 сөздік базалары – дайын құпия сөздер тізімі
                             </li>
                             <li class="list-dashed-content-item">
-                                Hidden Wiki даркнет сілтемелер
+                                Онлайн хэш бұзу сайттары
                             </li>
                         </ul>
                     </div>
@@ -283,24 +280,24 @@ BIBON V бағдарламасы                            </li>
                 <div class="card-inner-front w-100">
                     <img class="img-fluid" src="/images/pages/front/ic-suitcase.svg" alt="">
                     <div class="card-body text-center px-16">
-                        <h3 class="card-title font-size-24-lg font-size-18 font-weight-bold color-white">Kali Linux</h3>
-                        <p class="card-text font-size-16">Achieve job proficiency or learn a new skill</p>
+                        <h3 class="card-title font-size-24-lg font-size-18 font-weight-bold color-white">Қашықтан бақылау және RAT</h3>
+                        <p class="card-text font-size-16">Басқа компьютерді толық басқаруға арналған зиянды бағдарламалар:</p>
                     </div>
                 </div>
                 <div class="card-inner-back w-100 d-flex align-items-center justify-content-center">
                     <div class="card-text font-size-16 px-lg-24 px-16">
                         <ul class="list-dashed-content">
                             <li class="list-dashed-content-item">
-                                Kali Linux тест құралдары
+                                Remote Access Trojan
                             </li>
                             <li class="list-dashed-content-item">
-                                Metasploit эксплойт автоматизация
+                                Windows, кросс-платформалық RAT
                             </li>
                             <li class="list-dashed-content-item">
-                                Burp Suite веб тестілеу
+                                Кейлоггерлер – пернетақтада не терілгенін жазады
                             </li>
                             <li class="list-dashed-content-item">
-                                John the Ripper пароль бұзу
+                                Боттар, командалық жол арқылы басқару
                             </li>
                         </ul>
                     </div>
@@ -337,7 +334,7 @@ BIBON V бағдарламасы                            </li>
                         </svg>
                     </div>
                     <div class="col-12 font-size-42-lg font-size-24 font-weight-bolder text-white line-height-1-15 mt-24">
-                        <p><span>50k+</span> 5 star reviews</p>
+                        <p><span>100</span> дана кітап</p>
                     </div>
                 </div>
                 <div class="row mt-40">
@@ -348,7 +345,7 @@ BIBON V бағдарламасы                            </li>
                                     <div class="card-body text-center">
                                         <h3 class="card-title font-size-32-lg font-size-20 color-white">
                                             <span>15+</span>
-                                            paths
+                                            tools
                                         </h3>
                                         <p class="card-text font-size-16">
                                             To obtain skill or job proficiency</p>
@@ -359,8 +356,8 @@ BIBON V бағдарламасы                            </li>
                                 <div class="card w-100 bg-transparent rounded-lg border-gray-medium hover-bg-white pt-24 pb-16">
                                     <div class="card-body text-center">
                                         <h3 class="card-title font-size-32-lg font-size-20 color-white">
-                                            <span>135+</span>
-                                            modules
+                                            <span>30+</span>
+                                            практика
                                         </h3>
                                         <p class="card-text font-size-16">
                                             From a diverse pool of instructors</p>
@@ -371,8 +368,8 @@ BIBON V бағдарламасы                            </li>
                                 <div class="card w-100 bg-transparent rounded-lg border-gray-medium hover-bg-white pt-24 pb-16">
                                     <div class="card-body text-center">
                                         <h3 class="card-title font-size-32-lg font-size-20 color-white">
-                                            <span>1135+</span>
-                                            labs
+                                            <span>100+</span>
+                                            сайт
                                         </h3>
                                         <p class="card-text font-size-16">
                                             To obtain hands-on experience</p>
@@ -384,62 +381,32 @@ BIBON V бағдарламасы                            </li>
                 </div>
             </div>
         </section>
-                    <section class="academy-testimonials">
-                <div class="container mt-24">
-                    <div class="row rounded-lg bg-gray mt-40 pb-40">
-                        <div class="slick-slider slick-slider-testimonials text-center w-100">
-                            <div class="slick-slider-item pt-40 px-md-96 px-24">
-                    <p class="my-40 py-10"></p>
-                <p class="font-size-20-xs font-size-16 line-height-2 text-white">Hack The Box is where my infosec journey started. The main question people usually have is “Where do I begin?”. At NVISO, we provide new team members access to the HTB Academy, in which they complete modules and follow tracks focused on a specific topic (e.g. AD, Web Pentesting, Cryptography, etc.). This way, new NVISO-members build a strong knowledge base in these subjects.</p>
-        <p class="font-size-18-xs font-size-16 pt-32">Firat Acar - Cybersecurity Consultant/Red Teamer</p>
-    </div>
-    <div class="slick-slider-item pt-40 px-md-96 px-24">
-                    <p class="my-40 py-10"></p>
-                <p class="font-size-20-xs font-size-16 line-height-2 text-white">We immediately started using HTB Academy after we signed up and found that the modules challenge the students to work hard to successfully reach an end goal. Now, we have students getting hired only a month after starting to use HTB! We&#039;re excited to see this trend continue the rest of the academic year.</p>
-        <p class="font-size-18-xs font-size-16 pt-32">Matthew McCullough - Lead Instructor</p>
-    </div>
-    <div class="slick-slider-item pt-40 px-md-96 px-24">
-                    <p class="my-40 py-10"></p>
-                <p class="font-size-20-xs font-size-16 line-height-2 text-white">Thank you HTB family for all of the hard work and countless hours that have gone into developing the premier content in HTB Academy. I am grateful to have an affordable training resource that is helping to fill the gap between what we are taught in school and what will actually be required of us in the field.</p>
-        <p class="font-size-18-xs font-size-16 pt-32">@jhillman - Learner</p>
-    </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="container">
-                    <div class="row justify-content-center text-center mt-32 mb-128">
-                        <div class="col-12 px-0 mt-10">
-                            <a class="text-gradient font-size-18 arrow-link arrow-link-green mt-16" href="https://www.hackthebox.com/testimonials" target="_blank">
-                                Read more Academy testimonials
-                                <svg width="16" height="16" viewbox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="arrow-icon ">
-    <path fill="currentColor" d="M7.28033 3.21967C6.98744 2.92678 6.51256 2.92678 6.21967 3.21967C5.92678 3.51256 5.92678 3.98744 6.21967 4.28033L7.28033 3.21967ZM11 8L11.5303 8.53033C11.8232 8.23744 11.8232 7.76256 11.5303 7.46967L11 8ZM6.21967 11.7197C5.92678 12.0126 5.92678 12.4874 6.21967 12.7803C6.51256 13.0732 6.98744 13.0732 7.28033 12.7803L6.21967 11.7197ZM6.21967 4.28033L10.4697 8.53033L11.5303 7.46967L7.28033 3.21967L6.21967 4.28033ZM10.4697 7.46967L6.21967 11.7197L7.28033 12.7803L11.5303 8.53033L10.4697 7.46967Z"></path>
-    <path stroke="currentColor" d="M1.75 8H11" stroke-width="1.5" stroke-linecap="round" class="arrow-icon-stem"></path>
-</svg>                            </a>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                  
         
-        <section class="academy-bottom-cta">
-            <div class="container bg-gray bg-gradient-animated rounded-lg py-40">
-                <div class="row justify-content-center">
-                    <div class="d-flex flex-basis-100-xs flex-basis-50 justify-content-center">
-                        <h2 class="academy-bottom-cta-title color-white font-size-64-lg font-size-42 px-xl-4 px-lg-4 mb-lg-40 mb-64">
-                            Learn cybersecurity,<br> invest in your 
-                            <div class="effect-sliding-horizontal text-green position-absolute">
-                                <span data-text="future">future</span>
-                                <span data-text="career">career</span>
-                                <span data-text="skills">skills</span>
-                            </div>
-                        </h2>
+            <section class="academy-bottom-cta">
+                <div class="container bg-gray bg-gradient-animated rounded-lg mt-40 py-40">
+                    <div class="row justify-content-center">
+                        <div class="d-flex flex-basis-100-xs flex-basis-50 justify-content-center">
+                            <h2 class="academy-bottom-cta-title color-white font-size-64-lg font-size-42 px-xl-4 px-lg-4 mb-lg-40 mb-64">
+                                Learn cybersecurity,<br> invest in your 
+                                <div class="effect-sliding-horizontal text-green position-absolute">
+                                    <span data-text="future">future</span>
+                                    <span data-text="career">career</span>
+                                    <span data-text="skills">skills</span>
+                                </div>
+                            </h2>
+                        </div>
                     </div>
-                </div>
                 <div class="row justify-content-center px-xs-0 px-16 mt-8 d-flex flex-xs-row flex-column">
                     <button class="btn btn-main-gradient rounded">
-                        <a href="register.html">Start for Free</a>
+                        <a href="#"
+                           class="btn btn-main-gradient rounded mx-xs-0 ml-xxs-0 mx-16"
+                           onclick="alert('Кітап әлі шыққан жоқ'); return false;">
+                            Buy the book
+                        </a>
                     </button>
                     <button class="btn btn-extra rounded ml-xs-16 mt-16 mt-xs-0">
-                        <a href="academy-for-business.html">For Business</a>
+                        <a href="academy-for-business.html">Watch the trailer</a>
                     </button>
                 </div>
             </div>
@@ -448,18 +415,18 @@ BIBON V бағдарламасы                            </li>
     </main>
 
     <footer class="academy-footer w-100 pt-88">
-    <div class="academy-menu-main container px-0">
-        <nav class="navbar navbar-light navbar-expand-xl navbar-main py-32 z-index-9">
-        <a href="index.htm" class="logo">
-            <img src="images/logo.svg" alt="HTB Academy Logo" height="36">
-        </a>
-              
-    </nav>
-</div>
-    <div class="academy-footer-submenu">
-  
-</div>
-</footer>
+        <div class="academy-menu-main container px-0">
+            <nav class="navbar navbar-light py-32 z-index-9 justify-content-center">
+                <a href="index.htm" class="logo mx-auto d-block">
+                    <img src="images/logo.svg" alt="HTB Academy Logo" height="36">
+                </a>
+            </nav>
+        </div>
+
+        <div class="academy-footer-submenu">
+
+        </div>
+    </footer>
 
     
     <script>
