@@ -1,7 +1,7 @@
 # 👋 Abeken Aibek (aka **Bibon**)
 
 **Software Engineer** · **C# / WPF / .NET (Desktop)** · UI/UX · Cybersecurity (ethical)  
-📍 Kyzylorda, Kazakhstan
+📍 Kazakhstan | Usa
 
 🌐 Портфолио: http://abekenaibek.kz/  
 💬 Telegram: https://t.me/bibonuwu  
