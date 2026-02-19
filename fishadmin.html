@@ -1,0 +1,928 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Админ — Clients (fishbibon)</title>
+    <style>
+        :root {
+            --bg: #0b1020;
+            --card: #111a33;
+            --muted: #9fb0d0;
+            --text: #e9efff;
+            --accent: #6aa3ff;
+            --danger: #ff4d5e;
+            --ok: #39d98a;
+            --line: rgba(255,255,255,.08);
+            --shadow: 0 10px 30px rgba(0,0,0,.35);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(1200px 600px at 20% 0%, rgba(106,163,255,.18), transparent 50%), radial-gradient(1000px 700px at 80% 10%, rgba(57,217,138,.14), transparent 45%), var(--bg);
+            color: var(--text);
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", sans-serif;
+        }
+
+        a {
+            color: inherit
+        }
+
+        .wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px
+        }
+
+        .topbar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: rgba(17,26,51,.75);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 12px;
+            z-index: 5;
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+            gap: 2px
+        }
+
+            .brand .t {
+                font-weight: 800;
+                letter-spacing: .2px
+            }
+
+            .brand .s {
+                font-size: 12px;
+                color: var(--muted)
+            }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end
+        }
+
+        .btn {
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,.06);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+            .btn:hover {
+                background: rgba(255,255,255,.10)
+            }
+
+            .btn.primary {
+                background: rgba(106,163,255,.16);
+                border-color: rgba(106,163,255,.35)
+            }
+
+            .btn.danger {
+                background: rgba(255,77,94,.14);
+                border-color: rgba(255,77,94,.35)
+            }
+
+        .pill {
+            padding: 8px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            font-size: 12px;
+            color: var(--muted);
+            background: rgba(255,255,255,.04);
+            max-width: 55vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card {
+            background: rgba(17,26,51,.75);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 14px;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 220px;
+        }
+
+        label {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 12px;
+            border-radius: 14px;
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,.05);
+            color: var(--text);
+            outline: none;
+        }
+
+            input::placeholder {
+                color: rgba(233,239,255,.45)
+            }
+
+        .hint {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 8px
+        }
+
+        .split {
+            display: grid;
+            gap: 14px
+        }
+
+        @media (min-width: 920px) {
+            .split {
+                grid-template-columns: 380px 1fr;
+                align-items: start
+            }
+        }
+
+        .tableWrap {
+            display: none
+        }
+
+        @media (min-width: 920px) {
+            .tableWrap {
+                display: block
+            }
+
+            .cardsWrap {
+                display: none
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 14px
+        }
+
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            vertical-align: top
+        }
+
+        th {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 800;
+            background: rgba(255,255,255,.04)
+        }
+
+        td {
+            font-size: 13px
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace
+        }
+
+        .kpi {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+            .kpi .box {
+                padding: 10px 12px;
+                border-radius: 14px;
+                border: 1px solid var(--line);
+                background: rgba(255,255,255,.04);
+                min-width: 120px;
+            }
+
+                .kpi .box .n {
+                    font-weight: 900;
+                    font-size: 18px
+                }
+
+                .kpi .box .l {
+                    font-size: 12px;
+                    color: var(--muted)
+                }
+
+        .clientCard {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 14px;
+            border-radius: var(--radius);
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,.04);
+        }
+
+        .clientHead {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: flex-start
+        }
+
+        .clientTitle {
+            display: flex;
+            flex-direction: column;
+            gap: 2px
+        }
+
+            .clientTitle .main {
+                font-weight: 900
+            }
+
+            .clientTitle .sub {
+                font-size: 12px;
+                color: var(--muted)
+            }
+
+        .badge {
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,.04);
+            color: var(--muted);
+            max-width: 42vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .miniRow {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .mini {
+            font-size: 12px;
+            color: var(--muted);
+            border: 1px dashed rgba(255,255,255,.14);
+            padding: 8px 10px;
+            border-radius: 14px;
+        }
+
+            .mini b {
+                color: var(--text)
+            }
+
+        .links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .linkBtn {
+            text-decoration: none;
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,.06);
+            padding: 10px 12px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 13px;
+        }
+
+            .linkBtn:hover {
+                background: rgba(255,255,255,.10)
+            }
+
+        .dangerText {
+            color: var(--danger)
+        }
+
+        .ok {
+            color: var(--ok)
+        }
+
+        .modalBack {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            z-index: 50;
+        }
+
+        .modal {
+            width: min(900px, 100%);
+            max-height: 86vh;
+            overflow: auto;
+            background: rgba(17,26,51,.92);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 14px;
+            backdrop-filter: blur(14px);
+        }
+
+        .modalTop {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+            .modalTop .title {
+                font-weight: 900
+            }
+
+        .kv {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 12px
+        }
+
+        @media (min-width: 720px) {
+            .kv {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        .kv .item {
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,.04);
+            border-radius: 14px;
+            padding: 10px;
+        }
+
+            .kv .item .k {
+                font-size: 12px;
+                color: var(--muted);
+                margin-bottom: 6px
+            }
+
+            .kv .item .v {
+                font-size: 13px;
+                word-break: break-word
+            }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="topbar">
+            <div class="brand">
+                <div class="t">Админ-панель Clients</div>
+                <div class="s">Firestore: <span class="mono">fishbibon</span> • Collection: <span class="mono">Clients</span></div>
+            </div>
+            <div class="actions">
+                <div id="userPill" class="pill" style="display:none"></div>
+                <button id="btnSignOut" class="btn" style="display:none">Выйти</button>
+            </div>
+        </div>
+
+        <div class="split">
+            <!-- Auth / Filters -->
+            <div class="card">
+                <div id="authBox">
+                    <div style="font-weight:900; font-size:16px;">Вход</div>
+                    <div class="hint">Войти через Firebase Authentication (Email/Password).</div>
+
+                    <div style="height:10px"></div>
+                    <div class="field">
+                        <label>Email</label>
+                        <input id="email" type="email" placeholder="you@example.com" autocomplete="username" />
+                    </div>
+
+                    <div style="height:10px"></div>
+                    <div class="field">
+                        <label>Пароль</label>
+                        <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password" />
+                    </div>
+
+                    <div style="height:12px"></div>
+                    <div class="row">
+                        <button id="btnSignIn" class="btn primary" style="flex:1">Войти</button>
+                    </div>
+
+                    <div id="authMsg" class="hint"></div>
+                </div>
+
+                <div id="filtersBox" style="display:none">
+                    <div style="font-weight:900; font-size:16px;">Фильтры</div>
+                    <div class="hint">Поиск по любым полям записи.</div>
+
+                    <div style="height:10px"></div>
+                    <div class="field">
+                        <label>Поиск</label>
+                        <input id="q" type="text" placeholder="Android, ru, UID, 77.6, iPhone..." />
+                    </div>
+
+                    <div style="height:10px"></div>
+                    <div class="field">
+                        <label>Период</label>
+                        <select id="range">
+                            <option value="all">Все</option>
+                            <option value="24h">Последние 24 часа</option>
+                            <option value="7d">Последние 7 дней</option>
+                            <option value="30d">Последние 30 дней</option>
+                        </select>
+                    </div>
+
+                    <div style="height:12px"></div>
+                    <div class="kpi">
+                        <div class="box">
+                            <div class="n" id="kpiTotal">—</div>
+                            <div class="l">Записей</div>
+                        </div>
+                        <div class="box">
+                            <div class="n" id="kpiGeo">—</div>
+                            <div class="l">С гео</div>
+                        </div>
+                    </div>
+
+                    <div class="hint">🟢 Реалтайм обновления включены.</div>
+                </div>
+            </div>
+
+            <!-- List -->
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap">
+                    <div style="font-weight:900; font-size:16px;">Клиенты</div>
+                    <div class="hint" id="statusLine">⏳ Ожидание входа…</div>
+                </div>
+
+                <div style="height:12px"></div>
+
+                <div class="tableWrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Время</th>
+                                <th>Клиент</th>
+                                <th>Устройство</th>
+                                <th>Гео</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="cardsWrap" id="cardsWrap"></div>
+
+                <div id="empty" class="hint" style="display:none; padding:14px 0;">
+                    Нет записей по текущим фильтрам.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modalBack" class="modalBack">
+        <div class="modal">
+            <div class="modalTop">
+                <div>
+                    <div class="title" id="modalTitle">Детали</div>
+                    <div class="hint" id="modalSub"></div>
+                </div>
+                <div class="row">
+                    <a id="modal2gis" class="btn primary" style="text-decoration:none; display:none" target="_blank" rel="noopener">2GIS</a>
+                    <button id="modalDelete" class="btn danger">Удалить</button>
+                    <button id="modalClose" class="btn">Закрыть</button>
+                </div>
+            </div>
+
+            <div style="height:10px"></div>
+
+            <!-- Rename -->
+            <div class="card" style="background: rgba(255,255,255,.04); border-radius: 14px; padding:12px;">
+                <div class="row" style="align-items:end">
+                    <div class="field" style="min-width:240px; flex:1">
+                        <label>Короткое имя клиента (clientName)</label>
+                        <input id="nameInput" type="text" placeholder="например: Клиент 12 / K-123ABC" />
+                    </div>
+                    <button id="nameSave" class="btn primary">Сохранить</button>
+                    <button id="copyId" class="btn">Copy ID</button>
+                </div>
+                <div id="modalMsg" class="hint"></div>
+            </div>
+
+            <div class="kv" id="kv"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import {
+            getFirestore, collection, query, orderBy, onSnapshot,
+            deleteDoc, doc, updateDoc
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQlLh2Abk92sZVCSsYSCxvps4Uld3C1Lk",
+            authDomain: "bibonrat.firebaseapp.com",
+            databaseURL: "https://bibonrat-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "bibonrat",
+            storageBucket: "bibonrat.firebasestorage.app",
+            messagingSenderId: "78759159251",
+            appId: "1:78759159251:web:3e40d7d5a2aa762f01bb26"
+        };
+
+        const DB_NAME = "fishbibon";
+        const COLLECTION_NAME = "Clients";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app, DB_NAME);
+
+        // DOM
+        const userPill = document.getElementById("userPill");
+        const btnSignOut = document.getElementById("btnSignOut");
+        const btnSignIn = document.getElementById("btnSignIn");
+        const authMsg = document.getElementById("authMsg");
+        const emailEl = document.getElementById("email");
+        const passEl = document.getElementById("pass");
+        const authBox = document.getElementById("authBox");
+        const filtersBox = document.getElementById("filtersBox");
+        const statusLine = document.getElementById("statusLine");
+
+        const qEl = document.getElementById("q");
+        const rangeEl = document.getElementById("range");
+        const tableBody = document.getElementById("tableBody");
+        const cardsWrap = document.getElementById("cardsWrap");
+        const emptyEl = document.getElementById("empty");
+        const kpiTotal = document.getElementById("kpiTotal");
+        const kpiGeo = document.getElementById("kpiGeo");
+
+        const modalBack = document.getElementById("modalBack");
+        const modalClose = document.getElementById("modalClose");
+        const modalDelete = document.getElementById("modalDelete");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalSub = document.getElementById("modalSub");
+        const modalMsg = document.getElementById("modalMsg");
+        const modal2gis = document.getElementById("modal2gis");
+        const kv = document.getElementById("kv");
+        const nameInput = document.getElementById("nameInput");
+        const nameSave = document.getElementById("nameSave");
+        const copyIdBtn = document.getElementById("copyId");
+
+        function escapeHtml(s) {
+            return String(s)
+                .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+        }
+
+        function toDateAny(v) {
+            if (!v) return null;
+            if (typeof v === "string") {
+                const d = new Date(v);
+                return isNaN(d.getTime()) ? null : d;
+            }
+            if (typeof v?.toDate === "function") return v.toDate();
+            return null;
+        }
+
+        function fmt(d) {
+            if (!d) return "—";
+            return d.toLocaleString("ru-RU", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+        }
+
+        function getLatLng(data) {
+            const lat = data["Широта"] ?? data["latitude"] ?? data["lat"];
+            const lng = data["Долгота"] ?? data["longitude"] ?? data["lng"] ?? data["lon"];
+            const latN = lat != null ? Number(lat) : NaN;
+            const lngN = lng != null ? Number(lng) : NaN;
+            if (Number.isFinite(latN) && Number.isFinite(lngN)) return { lat: latN, lng: lngN };
+            return null;
+        }
+
+        function to2gisLink(lat, lng) {
+            return `https://2gis.ru/search/${encodeURIComponent(lat + "," + lng)}`;
+        }
+
+        function dataToSearchString(data) {
+            const parts = [];
+            for (const [k, v] of Object.entries(data || {})) {
+                parts.push(String(k));
+                parts.push(String(v));
+            }
+            return parts.join(" ").toLowerCase();
+        }
+
+        function inRange(d, range) {
+            if (!d) return true;
+            const now = Date.now();
+            const t = d.getTime();
+            if (range === "24h") return t >= now - 24 * 60 * 60 * 1000;
+            if (range === "7d") return t >= now - 7 * 24 * 60 * 60 * 1000;
+            if (range === "30d") return t >= now - 30 * 24 * 60 * 60 * 1000;
+            return true;
+        }
+
+        function shortLabelFromId(id) {
+            return "K-" + id.slice(0, 6).toUpperCase();
+        }
+
+        function getClientName(id, data) {
+            const n = (data?.clientName ?? data?.displayName ?? data?.name ?? data?.["Имя"] ?? "").toString().trim();
+            return n ? n : shortLabelFromId(id);
+        }
+
+        function clearList() {
+            tableBody.innerHTML = "";
+            cardsWrap.innerHTML = "";
+        }
+
+        function showEmpty(show) {
+            emptyEl.style.display = show ? "block" : "none";
+        }
+
+        // Modal
+        let currentDocId = null;
+        let currentData = null;
+
+        function openModal(id, data) {
+            currentDocId = id;
+            currentData = data;
+            modalMsg.textContent = "";
+
+            const clientName = getClientName(id, data);
+            const dt = toDateAny(data.timestamp);
+
+            modalTitle.textContent = `Клиент: ${clientName}`;
+            modalSub.textContent = `ID: ${id} • Время: ${fmt(dt)} • Полей: ${Object.keys(data).length}`;
+
+            nameInput.value = (data.clientName ?? data.displayName ?? data.name ?? data["Имя"] ?? "").toString();
+
+            const ll = getLatLng(data);
+            if (ll) {
+                modal2gis.style.display = "inline-block";
+                modal2gis.href = to2gisLink(ll.lat, ll.lng);
+            } else {
+                modal2gis.style.display = "none";
+                modal2gis.removeAttribute("href");
+            }
+
+            kv.innerHTML = "";
+            const entries = Object.entries(data).sort(([a], [b]) => a.localeCompare(b, "ru"));
+            for (const [k, v] of entries) {
+                const item = document.createElement("div");
+                item.className = "item";
+                const val = (typeof v === "object" && v?.seconds != null && v?.nanoseconds != null)
+                    ? fmt(toDateAny(v))
+                    : String(v);
+                item.innerHTML = `<div class="k">${escapeHtml(k)}</div><div class="v">${escapeHtml(val)}</div>`;
+                kv.appendChild(item);
+            }
+
+            modalBack.style.display = "flex";
+        }
+
+        function closeModal() {
+            modalBack.style.display = "none";
+            currentDocId = null;
+            currentData = null;
+        }
+
+        modalClose.addEventListener("click", closeModal);
+        modalBack.addEventListener("click", (e) => { if (e.target === modalBack) closeModal(); });
+
+        nameSave.addEventListener("click", async () => {
+            if (!currentDocId) return;
+            const val = nameInput.value.trim();
+            try {
+                await updateDoc(doc(db, COLLECTION_NAME, currentDocId), { clientName: val });
+                modalMsg.innerHTML = `<span class="ok">✅ Сохранено</span>`;
+            } catch (err) {
+                modalMsg.innerHTML = `<span class="dangerText">❌ ${escapeHtml(err?.message || err)}</span>`;
+            }
+        });
+
+        copyIdBtn.addEventListener("click", async () => {
+            if (!currentDocId) return;
+            try {
+                await navigator.clipboard.writeText(currentDocId);
+                modalMsg.innerHTML = `<span class="ok">✅ ID скопирован</span>`;
+            } catch {
+                modalMsg.innerHTML = `<span class="dangerText">❌ Не удалось скопировать</span>`;
+            }
+        });
+
+        // Auth (ТОЛЬКО Email/Password)
+        btnSignIn.addEventListener("click", async () => {
+            authMsg.textContent = "";
+            const email = emailEl.value.trim();
+            const pass = passEl.value.trim();
+            if (!email || !pass) {
+                authMsg.innerHTML = `<span class="dangerText">Введите email и пароль.</span>`;
+                return;
+            }
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (err) {
+                authMsg.innerHTML = `<span class="dangerText">${escapeHtml(err?.message || err)}</span>`;
+            }
+        });
+
+        btnSignOut.addEventListener("click", async () => { await signOut(auth); });
+
+        // Firestore realtime
+        let unsub = null;
+        let raw = []; // {id, data}
+
+        function applyFiltersAndRender() {
+            const needle = (qEl.value || "").trim().toLowerCase();
+            const range = rangeEl.value;
+
+            const filtered = raw.filter(({ data }) => {
+                const d = toDateAny(data.timestamp);
+                if (!inRange(d, range)) return false;
+                if (!needle) return true;
+                return dataToSearchString(data).includes(needle);
+            });
+
+            kpiTotal.textContent = String(filtered.length);
+            const geoCount = filtered.reduce((acc, it) => acc + (getLatLng(it.data) ? 1 : 0), 0);
+            kpiGeo.textContent = String(geoCount);
+
+            clearList();
+            if (filtered.length === 0) { showEmpty(true); return; }
+            showEmpty(false);
+
+            // Desktop
+            for (const { id, data } of filtered) {
+                const tr = document.createElement("tr");
+                const dt = toDateAny(data.timestamp);
+                const ua = data["User Agent"] ?? data["userAgent"] ?? "—";
+                const plat = data["Платформа"] ?? data["platform"] ?? "—";
+                const ll = getLatLng(data);
+
+                const clientName = getClientName(id, data);
+
+                tr.innerHTML = `
+              <td class="mono">${escapeHtml(fmt(dt))}</td>
+              <td>
+                <div><b>${escapeHtml(clientName)}</b></div>
+                <div class="hint mono">ID: ${escapeHtml(shortLabelFromId(id))}</div>
+              </td>
+              <td>
+                <div><b>${escapeHtml(plat)}</b></div>
+                <div style="color:var(--muted); font-size:12px">${escapeHtml(String(ua).slice(0, 120))}${String(ua).length > 120 ? "…" : ""}</div>
+              </td>
+              <td>
+                ${ll ? `<a class="linkBtn" target="_blank" rel="noopener" href="${to2gisLink(ll.lat, ll.lng)}">2GIS</a>
+                       <div class="hint mono" style="margin-top:6px">${ll.lat.toFixed(6)}, ${ll.lng.toFixed(6)}</div>`
+                        : `<span class="hint">—</span>`}
+              </td>
+              <td style="white-space:nowrap">
+                <button class="btn primary" data-open="${id}">Открыть</button>
+                <button class="btn danger" data-del="${id}">Удалить</button>
+              </td>
+            `;
+                tableBody.appendChild(tr);
+            }
+
+            // Mobile
+            for (const { id, data } of filtered) {
+                const dt = toDateAny(data.timestamp);
+                const ua = data["User Agent"] ?? data["userAgent"] ?? "—";
+                const lang = data["Язык"] ?? data["language"] ?? "—";
+                const ll = getLatLng(data);
+
+                const clientName = getClientName(id, data);
+
+                const card = document.createElement("div");
+                card.className = "clientCard";
+                card.innerHTML = `
+              <div class="clientHead">
+                <div class="clientTitle">
+                  <div class="main">${escapeHtml(clientName)}</div>
+                  <div class="sub">${escapeHtml(fmt(dt))} • <span class="mono">${escapeHtml(shortLabelFromId(id))}</span></div>
+                </div>
+                <div class="badge">${ll ? "📍 GEO" : "—"}</div>
+              </div>
+
+              <div class="miniRow">
+                <div class="mini"><b>Язык:</b> ${escapeHtml(lang)}</div>
+                <div class="mini"><b>UA:</b> ${escapeHtml(String(ua).slice(0, 60))}${String(ua).length > 60 ? "…" : ""}</div>
+              </div>
+
+              <div class="links">
+                ${ll ? `<a class="linkBtn" target="_blank" rel="noopener" href="${to2gisLink(ll.lat, ll.lng)}">Открыть 2GIS</a>` : ""}
+                <a class="linkBtn" href="#" data-open="${id}">Детали</a>
+                <a class="linkBtn dangerText" href="#" data-del="${id}">Удалить</a>
+              </div>
+            `;
+                cardsWrap.appendChild(card);
+            }
+
+            // Bind actions
+            document.querySelectorAll("[data-open]").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const id = btn.getAttribute("data-open");
+                    const found = raw.find(x => x.id === id);
+                    if (found) openModal(found.id, found.data);
+                });
+            });
+
+            document.querySelectorAll("[data-del]").forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                    e.preventDefault();
+                    const id = btn.getAttribute("data-del");
+                    if (!confirm("Удалить запись?")) return;
+                    try {
+                        await deleteDoc(doc(db, COLLECTION_NAME, id));
+                    } catch (err) {
+                        alert("Ошибка удаления: " + (err?.message || err));
+                    }
+                });
+            });
+        }
+
+        qEl.addEventListener("input", applyFiltersAndRender);
+        rangeEl.addEventListener("change", applyFiltersAndRender);
+
+        modalDelete.addEventListener("click", async () => {
+            if (!currentDocId) return;
+            if (!confirm("Точно удалить запись?")) return;
+            try {
+                await deleteDoc(doc(db, COLLECTION_NAME, currentDocId));
+                modalMsg.innerHTML = `<span class="ok">✅ Удалено</span>`;
+                setTimeout(closeModal, 400);
+            } catch (err) {
+                modalMsg.innerHTML = `<span class="dangerText">❌ ${escapeHtml(err?.message || err)}</span>`;
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (unsub) { unsub(); unsub = null; }
+            raw = [];
+            clearList();
+            showEmpty(false);
+
+            if (!user) {
+                statusLine.textContent = "⏳ Ожидание входа…";
+                authBox.style.display = "block";
+                filtersBox.style.display = "none";
+                userPill.style.display = "none";
+                btnSignOut.style.display = "none";
+                return;
+            }
+
+            authBox.style.display = "none";
+            filtersBox.style.display = "block";
+            userPill.style.display = "block";
+            btnSignOut.style.display = "inline-block";
+            userPill.textContent = `Вошли: ${user.email || user.uid}`;
+            statusLine.textContent = "🟢 Загружаю данные…";
+
+            const qy = query(collection(db, COLLECTION_NAME), orderBy("timestamp", "desc"));
+            unsub = onSnapshot(qy, (snap) => {
+                raw = snap.docs.map(d => ({ id: d.id, data: d.data() }));
+                statusLine.textContent = `🟢 Готово • ${raw.length} записей`;
+                applyFiltersAndRender();
+            }, (err) => {
+                statusLine.innerHTML = `<span class="dangerText">❌ ${escapeHtml(err?.message || err)}</span>`;
+            });
+        });
+    </script>
+
+   
+</body>
+</html>
