@@ -1,1 +1,1 @@
-Write-Host "irm https://get.activated.win | iex"
+irm https://get.activated.win | iex
