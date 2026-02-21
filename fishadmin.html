@@ -1,928 +1,1560 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Админ — Clients (fishbibon)</title>
-    <style>
-        :root {
-            --bg: #0b1020;
-            --card: #111a33;
-            --muted: #9fb0d0;
-            --text: #e9efff;
-            --accent: #6aa3ff;
-            --danger: #ff4d5e;
-            --ok: #39d98a;
-            --line: rgba(255,255,255,.08);
-            --shadow: 0 10px 30px rgba(0,0,0,.35);
-            --radius: 18px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Админ — Clients + папки (fishbibon)</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#111a33;
+      --muted:#9fb0d0;
+      --text:#e9efff;
+      --accent:#6aa3ff;
+      --danger:#ff4d5e;
+      --ok:#39d98a;
+      --line:rgba(255,255,255,.08);
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:radial-gradient(1200px 600px at 20% 0%, rgba(106,163,255,.18), transparent 50%),
+                 radial-gradient(1000px 700px at 80% 10%, rgba(57,217,138,.14), transparent 45%),
+                 var(--bg);
+      color:var(--text);
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans",sans-serif;
+    }
+    a{color:inherit}
 
-        * {
-            box-sizing: border-box
-        }
+    .wrap{max-width:1200px;margin:0 auto;padding:20px}
+    .topbar{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      padding:14px 16px;background:rgba(17,26,51,.75);
+      border:1px solid var(--line);border-radius:var(--radius);
+      box-shadow:var(--shadow);backdrop-filter:blur(10px);
+      position:sticky;top:12px;z-index:5;
+    }
+    .brand{display:flex;flex-direction:column;gap:2px}
+    .brand .t{font-weight:800;letter-spacing:.2px}
+    .brand .s{font-size:12px;color:var(--muted)}
+    .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 
-        body {
-            margin: 0;
-            background: radial-gradient(1200px 600px at 20% 0%, rgba(106,163,255,.18), transparent 50%), radial-gradient(1000px 700px at 80% 10%, rgba(57,217,138,.14), transparent 45%), var(--bg);
-            color: var(--text);
-            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", sans-serif;
-        }
+    .btn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;border-radius:14px;
+      font-weight:700;cursor:pointer;
+    }
+    .btn:hover{background:rgba(255,255,255,.10)}
+    .btn.primary{background:rgba(106,163,255,.16);border-color:rgba(106,163,255,.35)}
+    .btn.danger{background:rgba(255,77,94,.14);border-color:rgba(255,77,94,.35)}
+    .btn.ghost{background:transparent}
 
-        a {
-            color: inherit
-        }
+    .pill{
+      padding:8px 10px;border-radius:999px;border:1px solid var(--line);
+      font-size:12px;color:var(--muted);background:rgba(255,255,255,.04);
+      max-width:55vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    }
+    .card{
+      background:rgba(17,26,51,.75);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+    }
 
-        .wrap {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 20px
-        }
+    .layout{display:grid;gap:14px;margin-top:14px}
+    @media (min-width: 1020px){
+      .layout{grid-template-columns: 300px 1fr 360px; align-items:start;}
+    }
 
-        .topbar {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 16px;
-            background: rgba(17,26,51,.75);
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 12px;
-            z-index: 5;
-        }
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .field{display:flex;flex-direction:column;gap:6px}
+    label{font-size:12px;color:var(--muted)}
+    input, select{
+      width:100%;
+      padding:12px 12px;border-radius:14px;border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);outline:none;
+    }
+    input::placeholder{color:rgba(233,239,255,.45)}
+    .hint{font-size:12px;color:var(--muted);margin-top:8px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+    .dangerText{color:var(--danger)}
+    .ok{color:var(--ok)}
 
-        .brand {
-            display: flex;
-            flex-direction: column;
-            gap: 2px
-        }
+    /* KPI */
+    .kpi{display:flex;gap:10px;flex-wrap:wrap}
+    .kpi .box{
+      padding:10px 12px;border-radius:14px;border:1px solid var(--line);
+      background:rgba(255,255,255,.04);min-width:120px;
+    }
+    .kpi .box .n{font-weight:900;font-size:18px}
+    .kpi .box .l{font-size:12px;color:var(--muted)}
 
-            .brand .t {
-                font-weight: 800;
-                letter-spacing: .2px
-            }
+    /* Tables/cards */
+    .tableWrap{display:none}
+    @media (min-width: 1020px){.tableWrap{display:block}.cardsWrap{display:none}}
+    table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:14px}
+    th, td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{font-size:12px;color:var(--muted);font-weight:800;background:rgba(255,255,255,.04)}
+    td{font-size:13px}
+    .badge{
+      font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(255,255,255,.04);color:var(--muted);max-width:42vw;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    }
+    .linkBtn{
+      text-decoration:none;border:1px solid var(--line);background:rgba(255,255,255,.06);
+      padding:10px 12px;border-radius:14px;font-weight:800;font-size:13px;
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .linkBtn:hover{background:rgba(255,255,255,.10)}
 
-            .brand .s {
-                font-size: 12px;
-                color: var(--muted)
-            }
+    .clientCard{
+      display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:var(--radius);
+      border:1px solid var(--line);background:rgba(255,255,255,.04);
+    }
+    .clientHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .clientTitle{display:flex;flex-direction:column;gap:2px}
+    .clientTitle .main{font-weight:900}
+    .clientTitle .sub{font-size:12px;color:var(--muted)}
+    .miniRow{display:flex;gap:10px;flex-wrap:wrap}
+    .mini{
+      font-size:12px;color:var(--muted);border:1px dashed rgba(255,255,255,.14);
+      padding:8px 10px;border-radius:14px;
+    }
+    .mini b{color:var(--text)}
+    .links{display:flex;gap:10px;flex-wrap:wrap}
 
-        .actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-            justify-content: flex-end
-        }
+    /* Selection */
+    .chk{width:18px;height:18px;accent-color: var(--accent); cursor:pointer;}
+    .bulkBar{
+      display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      padding:10px 12px;border-radius:14px;border:1px solid var(--line);
+      background:rgba(255,255,255,.04);margin-top:10px;
+    }
+    .bulkLeft{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .pillSmall{
+      padding:6px 10px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(255,255,255,.04);color:var(--muted);font-size:12px;
+    }
 
-        .btn {
-            border: 1px solid var(--line);
-            background: rgba(255,255,255,.06);
-            color: var(--text);
-            padding: 10px 12px;
-            border-radius: 14px;
-            font-weight: 700;
-            cursor: pointer;
-        }
+    /* Folders sidebar */
+    .folderHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+    .folderTitle{font-weight:900;font-size:16px}
+    .folder-list{display:flex;flex-direction:column;gap:6px;margin:10px 0 0}
+    .folder-item{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:8px 10px;border-radius:14px;background:rgba(255,255,255,.04);
+      border:1px solid transparent;cursor:pointer;transition:.1s;
+      user-select:none;
+    }
+    .folder-item:hover{background:rgba(255,255,255,.08)}
+    .folder-item.selected{border-color:var(--accent);background:rgba(106,163,255,.12)}
+    .folder-left{display:flex;align-items:center;gap:8px;min-width:0}
+    .folder-name{font-weight:650;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width: 180px;}
+    .folder-count{
+      font-size:12px;color:var(--muted);background:rgba(0,0,0,.3);
+      padding:2px 10px;border-radius:30px;flex:0 0 auto;
+    }
+    .folder-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+    .iconBtn{
+      border:1px solid var(--line);background:rgba(255,255,255,.04);
+      color:var(--text);border-radius:12px;padding:6px 8px;cursor:pointer;font-weight:800;
+    }
+    .iconBtn:hover{background:rgba(255,255,255,.08)}
+    .dragOver{outline: 2px solid rgba(106,163,255,.6); outline-offset: 2px;}
 
-            .btn:hover {
-                background: rgba(255,255,255,.10)
-            }
+    /* Filters panel */
+    .panelHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer}
+    .panelHeader .t{font-weight:900;font-size:16px}
+    .panelBody{margin-top:12px}
+    .collapsed .panelBody{display:none}
 
-            .btn.primary {
-                background: rgba(106,163,255,.16);
-                border-color: rgba(106,163,255,.35)
-            }
+    .acc{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(255,255,255,.03);margin-top:10px}
+    .accBtn{
+      width:100%;display:flex;align-items:center;justify-content:space-between;
+      padding:10px 12px;background:rgba(255,255,255,.04);
+      border:0;color:var(--text);cursor:pointer;font-weight:850;
+    }
+    .accBtn:hover{background:rgba(255,255,255,.07)}
+    .accBody{padding:12px;display:none}
+    .acc.open .accBody{display:block}
+    .accMeta{font-size:12px;color:var(--muted);font-weight:700}
 
-            .btn.danger {
-                background: rgba(255,77,94,.14);
-                border-color: rgba(255,77,94,.35)
-            }
+    .filterFooter{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .filterFooter .btn{flex:1}
 
-        .pill {
-            padding: 8px 10px;
-            border-radius: 999px;
-            border: 1px solid var(--line);
-            font-size: 12px;
-            color: var(--muted);
-            background: rgba(255,255,255,.04);
-            max-width: 55vw;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+    /* Modals */
+    .modalBack{
+      position:fixed;inset:0;background:rgba(0,0,0,.55);
+      display:none;align-items:center;justify-content:center;padding:18px;z-index:50;
+    }
+    .modal{
+      width:min(920px,100%);max-height:86vh;overflow:auto;
+      background:rgba(17,26,51,.92);border:1px solid var(--line);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;backdrop-filter:blur(14px);
+    }
+    .modalTop{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+    .modalTop .title{font-weight:900}
+    .kv{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}
+    @media (min-width: 720px){.kv{grid-template-columns:1fr 1fr}}
+    .kv .item{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:14px;padding:10px}
+    .kv .item .k{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .kv .item .v{font-size:13px;word-break:break-word}
 
-        .card {
-            background: rgba(17,26,51,.75);
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 14px;
-        }
-
-        .row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap
-        }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex: 1;
-            min-width: 220px;
-        }
-
-        label {
-            font-size: 12px;
-            color: var(--muted)
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px 12px;
-            border-radius: 14px;
-            border: 1px solid var(--line);
-            background: rgba(255,255,255,.05);
-            color: var(--text);
-            outline: none;
-        }
-
-            input::placeholder {
-                color: rgba(233,239,255,.45)
-            }
-
-        .hint {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 8px
-        }
-
-        .split {
-            display: grid;
-            gap: 14px
-        }
-
-        @media (min-width: 920px) {
-            .split {
-                grid-template-columns: 380px 1fr;
-                align-items: start
-            }
-        }
-
-        .tableWrap {
-            display: none
-        }
-
-        @media (min-width: 920px) {
-            .tableWrap {
-                display: block
-            }
-
-            .cardsWrap {
-                display: none
-            }
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            overflow: hidden;
-            border-radius: 14px
-        }
-
-        th, td {
-            padding: 12px 10px;
-            border-bottom: 1px solid var(--line);
-            text-align: left;
-            vertical-align: top
-        }
-
-        th {
-            font-size: 12px;
-            color: var(--muted);
-            font-weight: 800;
-            background: rgba(255,255,255,.04)
-        }
-
-        td {
-            font-size: 13px
-        }
-
-        .mono {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace
-        }
-
-        .kpi {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap
-        }
-
-            .kpi .box {
-                padding: 10px 12px;
-                border-radius: 14px;
-                border: 1px solid var(--line);
-                background: rgba(255,255,255,.04);
-                min-width: 120px;
-            }
-
-                .kpi .box .n {
-                    font-weight: 900;
-                    font-size: 18px
-                }
-
-                .kpi .box .l {
-                    font-size: 12px;
-                    color: var(--muted)
-                }
-
-        .clientCard {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 14px;
-            border-radius: var(--radius);
-            border: 1px solid var(--line);
-            background: rgba(255,255,255,.04);
-        }
-
-        .clientHead {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            align-items: flex-start
-        }
-
-        .clientTitle {
-            display: flex;
-            flex-direction: column;
-            gap: 2px
-        }
-
-            .clientTitle .main {
-                font-weight: 900
-            }
-
-            .clientTitle .sub {
-                font-size: 12px;
-                color: var(--muted)
-            }
-
-        .badge {
-            font-size: 12px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            border: 1px solid var(--line);
-            background: rgba(255,255,255,.04);
-            color: var(--muted);
-            max-width: 42vw;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .miniRow {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap
-        }
-
-        .mini {
-            font-size: 12px;
-            color: var(--muted);
-            border: 1px dashed rgba(255,255,255,.14);
-            padding: 8px 10px;
-            border-radius: 14px;
-        }
-
-            .mini b {
-                color: var(--text)
-            }
-
-        .links {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap
-        }
-
-        .linkBtn {
-            text-decoration: none;
-            border: 1px solid var(--line);
-            background: rgba(255,255,255,.06);
-            padding: 10px 12px;
-            border-radius: 14px;
-            font-weight: 800;
-            font-size: 13px;
-        }
-
-            .linkBtn:hover {
-                background: rgba(255,255,255,.10)
-            }
-
-        .dangerText {
-            color: var(--danger)
-        }
-
-        .ok {
-            color: var(--ok)
-        }
-
-        .modalBack {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.55);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 18px;
-            z-index: 50;
-        }
-
-        .modal {
-            width: min(900px, 100%);
-            max-height: 86vh;
-            overflow: auto;
-            background: rgba(17,26,51,.92);
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 14px;
-            backdrop-filter: blur(14px);
-        }
-
-        .modalTop {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap
-        }
-
-            .modalTop .title {
-                font-weight: 900
-            }
-
-        .kv {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin-top: 12px
-        }
-
-        @media (min-width: 720px) {
-            .kv {
-                grid-template-columns: 1fr 1fr
-            }
-        }
-
-        .kv .item {
-            border: 1px solid var(--line);
-            background: rgba(255,255,255,.04);
-            border-radius: 14px;
-            padding: 10px;
-        }
-
-            .kv .item .k {
-                font-size: 12px;
-                color: var(--muted);
-                margin-bottom: 6px
-            }
-
-            .kv .item .v {
-                font-size: 13px;
-                word-break: break-word
-            }
-    </style>
+    /* Empty state */
+    .emptyState{
+      display:none;
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:14px;
+      padding:14px;
+      background:rgba(255,255,255,.03);
+      margin-top:12px;
+    }
+    .emptyState .h{font-weight:900;margin-bottom:6px}
+    .emptyState .p{color:var(--muted);font-size:12px;line-height:1.45}
+    .muted{color:var(--muted)}
+  </style>
 </head>
-
 <body>
-    <div class="wrap">
-        <div class="topbar">
-            <div class="brand">
-                <div class="t">Админ-панель Clients</div>
-                <div class="s">Firestore: <span class="mono">fishbibon</span> • Collection: <span class="mono">Clients</span></div>
-            </div>
-            <div class="actions">
-                <div id="userPill" class="pill" style="display:none"></div>
-                <button id="btnSignOut" class="btn" style="display:none">Выйти</button>
-            </div>
-        </div>
-
-        <div class="split">
-            <!-- Auth / Filters -->
-            <div class="card">
-                <div id="authBox">
-                    <div style="font-weight:900; font-size:16px;">Вход</div>
-                    <div class="hint">Войти через Firebase Authentication (Email/Password).</div>
-
-                    <div style="height:10px"></div>
-                    <div class="field">
-                        <label>Email</label>
-                        <input id="email" type="email" placeholder="you@example.com" autocomplete="username" />
-                    </div>
-
-                    <div style="height:10px"></div>
-                    <div class="field">
-                        <label>Пароль</label>
-                        <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password" />
-                    </div>
-
-                    <div style="height:12px"></div>
-                    <div class="row">
-                        <button id="btnSignIn" class="btn primary" style="flex:1">Войти</button>
-                    </div>
-
-                    <div id="authMsg" class="hint"></div>
-                </div>
-
-                <div id="filtersBox" style="display:none">
-                    <div style="font-weight:900; font-size:16px;">Фильтры</div>
-                    <div class="hint">Поиск по любым полям записи.</div>
-
-                    <div style="height:10px"></div>
-                    <div class="field">
-                        <label>Поиск</label>
-                        <input id="q" type="text" placeholder="Android, ru, UID, 77.6, iPhone..." />
-                    </div>
-
-                    <div style="height:10px"></div>
-                    <div class="field">
-                        <label>Период</label>
-                        <select id="range">
-                            <option value="all">Все</option>
-                            <option value="24h">Последние 24 часа</option>
-                            <option value="7d">Последние 7 дней</option>
-                            <option value="30d">Последние 30 дней</option>
-                        </select>
-                    </div>
-
-                    <div style="height:12px"></div>
-                    <div class="kpi">
-                        <div class="box">
-                            <div class="n" id="kpiTotal">—</div>
-                            <div class="l">Записей</div>
-                        </div>
-                        <div class="box">
-                            <div class="n" id="kpiGeo">—</div>
-                            <div class="l">С гео</div>
-                        </div>
-                    </div>
-
-                    <div class="hint">🟢 Реалтайм обновления включены.</div>
-                </div>
-            </div>
-
-            <!-- List -->
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap">
-                    <div style="font-weight:900; font-size:16px;">Клиенты</div>
-                    <div class="hint" id="statusLine">⏳ Ожидание входа…</div>
-                </div>
-
-                <div style="height:12px"></div>
-
-                <div class="tableWrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Время</th>
-                                <th>Клиент</th>
-                                <th>Устройство</th>
-                                <th>Гео</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody"></tbody>
-                    </table>
-                </div>
-
-                <div class="cardsWrap" id="cardsWrap"></div>
-
-                <div id="empty" class="hint" style="display:none; padding:14px 0;">
-                    Нет записей по текущим фильтрам.
-                </div>
-            </div>
-        </div>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="t">Админ-панель Clients + папки</div>
+        <div class="s">Firestore: <span class="mono">(default)</span> • Collections: <span class="mono">Clients</span> + <span class="mono">Folders</span></div>
+      </div>
+      <div class="actions">
+        <div id="userPill" class="pill" style="display:none"></div>
+        <button id="btnSignOut" class="btn" style="display:none">Выйти</button>
+      </div>
     </div>
 
-    <!-- Modal -->
-    <div id="modalBack" class="modalBack">
-        <div class="modal">
-            <div class="modalTop">
-                <div>
-                    <div class="title" id="modalTitle">Детали</div>
-                    <div class="hint" id="modalSub"></div>
+    <div class="layout">
+      <!-- Left: folders -->
+      <div id="foldersPanel" class="card" style="display:none">
+        <div class="folderHeader">
+          <div class="folderTitle">Папки</div>
+          <button id="createFolderBtn" class="btn" style="padding:8px 12px;">+ Создать</button>
+        </div>
+        <div class="hint" style="margin-top:0">Перетаскивайте элементы в папки. Поддерживается multi-select.</div>
+        <div id="folderList" class="folder-list"></div>
+        <div id="foldersEmpty" class="hint" style="display:none">Папок пока нет — создайте первую (можно делать вложенные).</div>
+      </div>
+
+      <!-- Center: list -->
+      <div id="listPanel" class="card">
+        <div style="display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap">
+          <div style="font-weight:900; font-size:16px;">Клиенты</div>
+          <div class="hint" id="statusLine">⏳ Ожидание входа…</div>
+        </div>
+
+        <div id="bulkBar" class="bulkBar">
+          <div class="bulkLeft">
+            <span class="pillSmall" id="selPill">Выбрано: 0</span>
+            <button id="bulkMoveBtn" class="btn primary">Переместить…</button>
+            <button id="bulkClearBtn" class="btn">Снять</button>
+          </div>
+          <div class="muted" style="font-size:12px">Drag & drop работает и для нескольких выбранных</div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:44px"></th>
+                <th>Время</th>
+                <th>Клиент</th>
+                <th>Устройство</th>
+                <th>Гео</th>
+                <th>Папка</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="cardsWrap" id="cardsWrap"></div>
+
+        <div id="empty" class="emptyState">
+          <div class="h" id="emptyTitle">Пусто</div>
+          <div class="p" id="emptyText">—</div>
+          <div class="filterFooter" style="margin-top:10px">
+            <button id="emptyResetBtn" class="btn">Сбросить фильтры</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: auth + filters -->
+      <div id="rightPanel" class="card">
+        <div id="authBox">
+          <div style="font-weight:900; font-size:16px;">Вход</div>
+          <div class="hint">Войти через Firebase Authentication (Email/Password).</div>
+          <div style="height:10px"></div>
+          <div class="field">
+            <label>Email</label>
+            <input id="email" type="email" placeholder="you@example.com" autocomplete="username" />
+          </div>
+          <div style="height:10px"></div>
+          <div class="field">
+            <label>Пароль</label>
+            <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <div style="height:12px"></div>
+          <div class="row">
+            <button id="btnSignIn" class="btn primary" style="flex:1">Войти</button>
+          </div>
+          <div id="authMsg" class="hint"></div>
+        </div>
+
+        <div id="filtersBox" style="display:none">
+          <div id="filtersHeader" class="panelHeader">
+            <div class="t">Фильтры</div>
+            <div class="accMeta"><span id="filtersHeaderMeta">—</span> <span id="filtersChevron">🔼</span></div>
+          </div>
+
+          <div id="filtersBody" class="panelBody">
+            <div class="acc" data-acc="search">
+              <button class="accBtn" type="button">
+                <span>Поиск</span><span class="accMeta" id="accMetaSearch">—</span>
+              </button>
+              <div class="accBody">
+                <div class="field">
+                  <label>Строка поиска</label>
+                  <input id="q" type="text" placeholder="Android, ru, UID, 77.6, iPhone…" />
                 </div>
-                <div class="row">
-                    <a id="modal2gis" class="btn primary" style="text-decoration:none; display:none" target="_blank" rel="noopener">2GIS</a>
-                    <button id="modalDelete" class="btn danger">Удалить</button>
-                    <button id="modalClose" class="btn">Закрыть</button>
-                </div>
+              </div>
             </div>
 
-            <div style="height:10px"></div>
+            <div class="acc" data-acc="period">
+              <button class="accBtn" type="button">
+                <span>Период</span><span class="accMeta" id="accMetaPeriod">—</span>
+              </button>
+              <div class="accBody">
+                <div class="field">
+                  <label>Период</label>
+                  <select id="range">
+                    <option value="all">Все</option>
+                    <option value="24h">Последние 24 часа</option>
+                    <option value="7d">Последние 7 дней</option>
+                    <option value="30d">Последние 30 дней</option>
+                  </select>
+                </div>
+              </div>
+            </div>
 
-            <!-- Rename -->
-            <div class="card" style="background: rgba(255,255,255,.04); border-radius: 14px; padding:12px;">
+            <div class="acc" data-acc="sort">
+              <button class="accBtn" type="button">
+                <span>Сортировка</span><span class="accMeta" id="accMetaSort">—</span>
+              </button>
+              <div class="accBody">
                 <div class="row" style="align-items:end">
-                    <div class="field" style="min-width:240px; flex:1">
-                        <label>Короткое имя клиента (clientName)</label>
-                        <input id="nameInput" type="text" placeholder="например: Клиент 12 / K-123ABC" />
-                    </div>
-                    <button id="nameSave" class="btn primary">Сохранить</button>
-                    <button id="copyId" class="btn">Copy ID</button>
+                  <div class="field" style="flex:1; min-width: 220px">
+                    <label>Сортировать по</label>
+                    <select id="sortField">
+                      <option value="date">⏱️ дата</option>
+                      <option value="name">📛 название</option>
+                      <option value="folder">📁 папка</option>
+                    </select>
+                  </div>
+                  <div class="field" style="min-width: 130px">
+                    <label>Порядок</label>
+                    <button id="sortDirBtn" class="btn" type="button">⬇️ убыв.</button>
+                  </div>
                 </div>
-                <div id="modalMsg" class="hint"></div>
+                <div class="hint" style="margin-top:10px">Выбор сортировки запоминается.</div>
+              </div>
             </div>
 
-            <div class="kv" id="kv"></div>
+            <div class="filterFooter">
+              <button id="btnReset" class="btn" type="button">Сбросить</button>
+              <button id="btnApply" class="btn primary" type="button">Применить</button>
+            </div>
+
+            <div style="height:12px"></div>
+            <div class="kpi">
+              <div class="box">
+                <div class="n" id="kpiTotal">—</div>
+                <div class="l">Записей</div>
+              </div>
+              <div class="box">
+                <div class="n" id="kpiGeo">—</div>
+                <div class="l">С гео</div>
+              </div>
+            </div>
+
+            <div class="hint">🟢 Реалтайм обновления включены.</div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import {
-            getFirestore, collection, query, orderBy, onSnapshot,
-            deleteDoc, doc, updateDoc
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  <!-- Modal: client details -->
+  <div id="modalBack" class="modalBack">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <div class="title" id="modalTitle">Детали</div>
+          <div class="hint" id="modalSub"></div>
+        </div>
+        <div class="row">
+          <a id="modal2gis" class="btn primary" style="text-decoration:none; display:none" target="_blank" rel="noopener">2GIS</a>
+          <button id="modalDelete" class="btn danger">Удалить</button>
+          <button id="modalClose" class="btn">Закрыть</button>
+        </div>
+      </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAQlLh2Abk92sZVCSsYSCxvps4Uld3C1Lk",
-            authDomain: "bibonrat.firebaseapp.com",
-            databaseURL: "https://bibonrat-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "bibonrat",
-            storageBucket: "bibonrat.firebasestorage.app",
-            messagingSenderId: "78759159251",
-            appId: "1:78759159251:web:3e40d7d5a2aa762f01bb26"
-        };
+      <div style="height:10px"></div>
 
-        const DB_NAME = "fishbibon";
-        const COLLECTION_NAME = "Clients";
+      <div class="card" style="background: rgba(255,255,255,.04); border-radius: 14px; padding:12px;">
+        <div class="row" style="align-items:end">
+          <div class="field" style="min-width:240px; flex:1">
+            <label>Короткое имя клиента (clientName)</label>
+            <input id="nameInput" type="text" placeholder="например: Клиент 12 / K-123ABC" />
+          </div>
+          <button id="nameSave" class="btn primary">Сохранить</button>
+          <button id="copyId" class="btn">Copy ID</button>
+        </div>
+      </div>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app, DB_NAME);
+      <div class="card" style="background: rgba(255,255,255,.04); border-radius: 14px; padding:12px; margin-top: 10px;">
+        <div style="font-weight:700; margin-bottom:8px;">📁 Переместить в папку</div>
+        <div class="row">
+          <select id="folderSelect" style="flex:1;">
+            <option value="">— Без папки —</option>
+          </select>
+          <button id="moveToFolderBtn" class="btn primary">Переместить</button>
+        </div>
+        <div id="modalMsg" class="hint"></div>
+      </div>
 
-        // DOM
-        const userPill = document.getElementById("userPill");
-        const btnSignOut = document.getElementById("btnSignOut");
-        const btnSignIn = document.getElementById("btnSignIn");
-        const authMsg = document.getElementById("authMsg");
-        const emailEl = document.getElementById("email");
-        const passEl = document.getElementById("pass");
-        const authBox = document.getElementById("authBox");
-        const filtersBox = document.getElementById("filtersBox");
-        const statusLine = document.getElementById("statusLine");
+      <div class="kv" id="kv"></div>
+    </div>
+  </div>
 
-        const qEl = document.getElementById("q");
-        const rangeEl = document.getElementById("range");
-        const tableBody = document.getElementById("tableBody");
-        const cardsWrap = document.getElementById("cardsWrap");
-        const emptyEl = document.getElementById("empty");
-        const kpiTotal = document.getElementById("kpiTotal");
-        const kpiGeo = document.getElementById("kpiGeo");
+  <!-- Modal: bulk move -->
+  <div id="bulkModalBack" class="modalBack">
+    <div class="modal" style="width:min(720px,100%)">
+      <div class="modalTop">
+        <div>
+          <div class="title">Переместить выбранные</div>
+          <div class="hint" id="bulkModalSub">—</div>
+        </div>
+        <div class="row">
+          <button id="bulkModalClose" class="btn">Закрыть</button>
+        </div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="card" style="background: rgba(255,255,255,.04); border-radius: 14px; padding:12px;">
+        <div class="row" style="align-items:end">
+          <div class="field" style="flex:1; min-width: 240px">
+            <label>Папка</label>
+            <select id="bulkFolderSelect">
+              <option value="">— Без папки —</option>
+            </select>
+          </div>
+          <button id="bulkMoveConfirm" class="btn primary">Переместить</button>
+        </div>
+        <div id="bulkModalMsg" class="hint"></div>
+      </div>
+    </div>
+  </div>
 
-        const modalBack = document.getElementById("modalBack");
-        const modalClose = document.getElementById("modalClose");
-        const modalDelete = document.getElementById("modalDelete");
-        const modalTitle = document.getElementById("modalTitle");
-        const modalSub = document.getElementById("modalSub");
-        const modalMsg = document.getElementById("modalMsg");
-        const modal2gis = document.getElementById("modal2gis");
-        const kv = document.getElementById("kv");
-        const nameInput = document.getElementById("nameInput");
-        const nameSave = document.getElementById("nameSave");
-        const copyIdBtn = document.getElementById("copyId");
+  <!-- Modal: folder create/rename -->
+  <div id="folderModalBack" class="modalBack">
+    <div class="modal" style="width:min(720px,100%)">
+      <div class="modalTop">
+        <div>
+          <div class="title" id="folderModalTitle">Папка</div>
+          <div class="hint" id="folderModalSub">—</div>
+        </div>
+        <div class="row">
+          <button id="folderModalClose" class="btn">Закрыть</button>
+        </div>
+      </div>
 
-        function escapeHtml(s) {
-            return String(s)
-                .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
-                .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+      <div style="height:10px"></div>
+
+      <div class="card" style="background: rgba(255,255,255,.04); border-radius: 14px; padding:12px;">
+        <div class="field">
+          <label>Название папки</label>
+          <input id="folderNameInput" type="text" placeholder="например: Казахстан / Алматы" />
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="field">
+          <label>Родитель (для вложенных папок)</label>
+          <select id="folderParentSelect">
+            <option value="">— Корень —</option>
+          </select>
+        </div>
+
+        <div class="filterFooter">
+          <button id="folderModalCancel" class="btn">Отмена</button>
+          <button id="folderModalSave" class="btn primary">Сохранить</button>
+        </div>
+
+        <div id="folderModalMsg" class="hint"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import {
+      getFirestore, collection, query, orderBy, onSnapshot,
+      deleteDoc, doc, updateDoc, addDoc, writeBatch, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAQlLh2Abk92sZVCSsYSCxvps4Uld3C1Lk",
+      authDomain: "bibonrat.firebaseapp.com",
+      databaseURL: "https://bibonrat-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "bibonrat",
+      storageBucket: "bibonrat.firebasestorage.app",
+      messagingSenderId: "78759159251",
+      appId: "1:78759159251:web:3e40d7d5a2aa762f01bb26"
+    };
+
+    const DB_NAME = "(default)";
+    const CLIENTS_COLLECTION = "Clients";
+    const FOLDERS_COLLECTION = "Folders";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // --- DOM ---
+    const userPill = document.getElementById("userPill");
+    const btnSignOut = document.getElementById("btnSignOut");
+
+    const authBox = document.getElementById("authBox");
+    const btnSignIn = document.getElementById("btnSignIn");
+    const authMsg = document.getElementById("authMsg");
+    const emailEl = document.getElementById("email");
+    const passEl = document.getElementById("pass");
+
+    const foldersPanel = document.getElementById("foldersPanel");
+    const folderListDiv = document.getElementById("folderList");
+    const createFolderBtn = document.getElementById("createFolderBtn");
+    const foldersEmpty = document.getElementById("foldersEmpty");
+
+    const listPanel = document.getElementById("listPanel");
+    const statusLine = document.getElementById("statusLine");
+    const tableBody = document.getElementById("tableBody");
+    const cardsWrap = document.getElementById("cardsWrap");
+
+    const emptyBox = document.getElementById("empty");
+    const emptyTitle = document.getElementById("emptyTitle");
+    const emptyText = document.getElementById("emptyText");
+    const emptyResetBtn = document.getElementById("emptyResetBtn");
+
+    const filtersBox = document.getElementById("filtersBox");
+    const filtersHeader = document.getElementById("filtersHeader");
+    const filtersBody = document.getElementById("filtersBody");
+    const filtersChevron = document.getElementById("filtersChevron");
+    const filtersHeaderMeta = document.getElementById("filtersHeaderMeta");
+
+    const qEl = document.getElementById("q");
+    const rangeEl = document.getElementById("range");
+    const sortFieldEl = document.getElementById("sortField");
+    const sortDirBtn = document.getElementById("sortDirBtn");
+    const btnReset = document.getElementById("btnReset");
+    const btnApply = document.getElementById("btnApply");
+
+    const kpiTotal = document.getElementById("kpiTotal");
+    const kpiGeo = document.getElementById("kpiGeo");
+
+    // Bulk selection
+    const bulkBar = document.getElementById("bulkBar");
+    const selPill = document.getElementById("selPill");
+    const bulkMoveBtn = document.getElementById("bulkMoveBtn");
+    const bulkClearBtn = document.getElementById("bulkClearBtn");
+
+    // Modals: client details
+    const modalBack = document.getElementById("modalBack");
+    const modalClose = document.getElementById("modalClose");
+    const modalDelete = document.getElementById("modalDelete");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalSub = document.getElementById("modalSub");
+    const modalMsg = document.getElementById("modalMsg");
+    const modal2gis = document.getElementById("modal2gis");
+    const kv = document.getElementById("kv");
+    const nameInput = document.getElementById("nameInput");
+    const nameSave = document.getElementById("nameSave");
+    const copyIdBtn = document.getElementById("copyId");
+    const folderSelect = document.getElementById("folderSelect");
+    const moveToFolderBtn = document.getElementById("moveToFolderBtn");
+
+    // Modals: bulk move
+    const bulkModalBack = document.getElementById("bulkModalBack");
+    const bulkModalClose = document.getElementById("bulkModalClose");
+    const bulkModalSub = document.getElementById("bulkModalSub");
+    const bulkModalMsg = document.getElementById("bulkModalMsg");
+    const bulkFolderSelect = document.getElementById("bulkFolderSelect");
+    const bulkMoveConfirm = document.getElementById("bulkMoveConfirm");
+
+    // Modals: folder edit
+    const folderModalBack = document.getElementById("folderModalBack");
+    const folderModalClose = document.getElementById("folderModalClose");
+    const folderModalCancel = document.getElementById("folderModalCancel");
+    const folderModalSave = document.getElementById("folderModalSave");
+    const folderModalTitle = document.getElementById("folderModalTitle");
+    const folderModalSub = document.getElementById("folderModalSub");
+    const folderModalMsg = document.getElementById("folderModalMsg");
+    const folderNameInput = document.getElementById("folderNameInput");
+    const folderParentSelect = document.getElementById("folderParentSelect");
+
+    // --- localStorage state ---
+    const LS_KEY = "fishadmin_state_v2";
+    const defaultState = {
+      selectedFolder: "ALL", // ALL | NONE | folderId
+      filters: { q: "", range: "all", sortField: "date", sortDir: "desc" },
+      ui: { filtersCollapsed: false, acc: { search: true, period: true, sort: true } }
+    };
+
+    function safeJsonParse(s, fallback){
+      try { return JSON.parse(s); } catch { return fallback; }
+    }
+    function loadState(){
+      const saved = safeJsonParse(localStorage.getItem(LS_KEY) || "{}", {});
+      return {
+        ...defaultState,
+        ...saved,
+        filters: { ...defaultState.filters, ...(saved.filters || {}) },
+        ui: { ...defaultState.ui, ...(saved.ui || {}), acc: { ...defaultState.ui.acc, ...((saved.ui||{}).acc||{}) } },
+      };
+    }
+    let state = loadState();
+    function saveState(){
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+    }
+
+    // --- Utils ---
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+    }
+    function toDateAny(v){
+      if(!v) return null;
+      if(typeof v === "string"){ const d = new Date(v); return isNaN(d.getTime()) ? null : d; }
+      if(typeof v?.toDate === "function") return v.toDate();
+      return null;
+    }
+    function fmt(d){
+      if(!d) return "—";
+      return d.toLocaleString("ru-RU", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit" });
+    }
+    function getLatLng(data){
+      const lat = data["Широта"] ?? data["latitude"] ?? data["lat"];
+      const lng = data["Долгота"] ?? data["longitude"] ?? data["lng"] ?? data["lon"];
+      const latN = lat != null ? Number(lat) : NaN;
+      const lngN = lng != null ? Number(lng) : NaN;
+      if (Number.isFinite(latN) && Number.isFinite(lngN)) return { lat: latN, lng: lngN };
+      return null;
+    }
+    function to2gisLink(lat, lng){ return `https://2gis.ru/search/${encodeURIComponent(lat + "," + lng)}`; }
+    function dataToSearchString(data){
+      const parts=[];
+      for (const [k,v] of Object.entries(data||{})){ parts.push(String(k)); parts.push(String(v)); }
+      return parts.join(" ").toLowerCase();
+    }
+    function inRange(d, range){
+      if(!d) return true;
+      const now = Date.now();
+      const t = d.getTime();
+      if(range === "24h") return t >= now - 24*60*60*1000;
+      if(range === "7d") return t >= now - 7*24*60*60*1000;
+      if(range === "30d") return t >= now - 30*24*60*60*1000;
+      return true;
+    }
+    function shortLabelFromId(id){ return "K-" + id.slice(0,6).toUpperCase(); }
+    function getClientName(id, data){
+      const n = (data?.clientName ?? data?.displayName ?? data?.name ?? data?.["Имя"] ?? "").toString().trim();
+      return n ? n : shortLabelFromId(id);
+    }
+
+    function clearList(){ tableBody.innerHTML = ""; cardsWrap.innerHTML = ""; }
+    function showEmptyBox(show){ emptyBox.style.display = show ? "block" : "none"; }
+
+    // --- Accordions / panels ---
+    function setFiltersCollapsed(collapsed){
+      state.ui.filtersCollapsed = collapsed;
+      saveState();
+      if(collapsed){
+        filtersBody.style.display = "none";
+        filtersChevron.textContent = "🔽";
+      } else {
+        filtersBody.style.display = "block";
+        filtersChevron.textContent = "🔼";
+      }
+    }
+    function setupAccordions(){
+      document.querySelectorAll(".acc").forEach(acc => {
+        const key = acc.dataset.acc;
+        const btn = acc.querySelector(".accBtn");
+        const open = !!state.ui.acc[key];
+        if(open) acc.classList.add("open");
+        btn.addEventListener("click", () => {
+          const willOpen = !acc.classList.contains("open");
+          acc.classList.toggle("open");
+          state.ui.acc[key] = willOpen;
+          saveState();
+        });
+      });
+    }
+
+    // --- Data state ---
+    let unsubClients = null;
+    let unsubFolders = null;
+
+    let raw = []; // {id, data}
+    let foldersArr = []; // {id, ...data}
+    let foldersById = {}; // id -> {id,name,parentId}
+    let folderChildren = new Map(); // parentId -> [folder]
+    let folderOrder = []; // flat list with depth for options rendering
+
+    let selectedIds = new Set(); // multi-select
+
+    // --- Folder helpers ---
+    function buildFolderIndex(){
+      foldersById = {};
+      folderChildren = new Map();
+      for(const f of foldersArr){
+        foldersById[f.id] = { id: f.id, name: (f.name||"").toString(), parentId: f.parentId || null };
+      }
+      for(const f of Object.values(foldersById)){
+        const p = f.parentId || "";
+        if(!folderChildren.has(p)) folderChildren.set(p, []);
+        folderChildren.get(p).push(f);
+      }
+      // Sort children by name
+      for(const [k, arr] of folderChildren.entries()){
+        arr.sort((a,b)=> (a.name||"").localeCompare((b.name||""), "ru"));
+      }
+
+      folderOrder = [];
+      function walk(parentKey, depth){
+        const children = folderChildren.get(parentKey) || [];
+        for(const c of children){
+          folderOrder.push({ ...c, depth });
+          walk(c.id, depth+1);
         }
+      }
+      walk("", 0);
+    }
 
-        function toDateAny(v) {
-            if (!v) return null;
-            if (typeof v === "string") {
-                const d = new Date(v);
-                return isNaN(d.getTime()) ? null : d;
-            }
-            if (typeof v?.toDate === "function") return v.toDate();
-            return null;
-        }
+    function folderPath(folderId){
+      const parts = [];
+      let cur = foldersById[folderId];
+      let guard = 0;
+      while(cur && guard < 50){
+        parts.unshift(cur.name);
+        cur = cur.parentId ? foldersById[cur.parentId] : null;
+        guard++;
+      }
+      return parts.join(" / ");
+    }
 
-        function fmt(d) {
-            if (!d) return "—";
-            return d.toLocaleString("ru-RU", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" });
-        }
+    function getFolderLabelForClient(data){
+      const fid = data?.folderId;
+      if(fid && foldersById[fid]) return folderPath(fid);
+      // compatibility: old string field
+      const legacy = (data?.folder ?? "").toString().trim();
+      if(legacy) return legacy;
+      return "—";
+    }
 
-        function getLatLng(data) {
-            const lat = data["Широта"] ?? data["latitude"] ?? data["lat"];
-            const lng = data["Долгота"] ?? data["longitude"] ?? data["lng"] ?? data["lon"];
-            const latN = lat != null ? Number(lat) : NaN;
-            const lngN = lng != null ? Number(lng) : NaN;
-            if (Number.isFinite(latN) && Number.isFinite(lngN)) return { lat: latN, lng: lngN };
-            return null;
-        }
+    function countByFolderId(){
+      const counts = new Map();
+      let none = 0;
+      for(const {data} of raw){
+        const fid = data.folderId;
+        if(fid){ counts.set(fid, (counts.get(fid)||0) + 1); }
+        else none++;
+      }
+      return { counts, none };
+    }
 
-        function to2gisLink(lat, lng) {
-            return `https://2gis.ru/search/${encodeURIComponent(lat + "," + lng)}`;
-        }
+    function renderFolders(){
+      buildFolderIndex();
+      const { counts, none } = countByFolderId();
 
-        function dataToSearchString(data) {
-            const parts = [];
-            for (const [k, v] of Object.entries(data || {})) {
-                parts.push(String(k));
-                parts.push(String(v));
-            }
-            return parts.join(" ").toLowerCase();
-        }
+      const selected = state.selectedFolder;
+      let html = "";
 
-        function inRange(d, range) {
-            if (!d) return true;
-            const now = Date.now();
-            const t = d.getTime();
-            if (range === "24h") return t >= now - 24 * 60 * 60 * 1000;
-            if (range === "7d") return t >= now - 7 * 24 * 60 * 60 * 1000;
-            if (range === "30d") return t >= now - 30 * 24 * 60 * 60 * 1000;
-            return true;
-        }
+      const allCount = raw.length;
 
-        function shortLabelFromId(id) {
-            return "K-" + id.slice(0, 6).toUpperCase();
-        }
+      const mkBaseItem = (key, icon, label, count) => {
+        const sel = selected === key ? "selected" : "";
+        return `
+          <div class="folder-item ${sel}" data-folderkey="${key}" data-drop="1">
+            <div class="folder-left">
+              <span>${icon}</span>
+              <span class="folder-name">${escapeHtml(label)}</span>
+            </div>
+            <div class="folder-actions">
+              <span class="folder-count">${count}</span>
+            </div>
+          </div>
+        `;
+      };
 
-        function getClientName(id, data) {
-            const n = (data?.clientName ?? data?.displayName ?? data?.name ?? data?.["Имя"] ?? "").toString().trim();
-            return n ? n : shortLabelFromId(id);
-        }
+      html += mkBaseItem("ALL", "📂", "Все", allCount);
+      html += mkBaseItem("NONE", "📭", "Без папки", none);
 
-        function clearList() {
-            tableBody.innerHTML = "";
-            cardsWrap.innerHTML = "";
-        }
+      if(folderOrder.length === 0){
+        foldersEmpty.style.display = "block";
+      } else {
+        foldersEmpty.style.display = "none";
+      }
 
-        function showEmpty(show) {
-            emptyEl.style.display = show ? "block" : "none";
-        }
+      for(const f of folderOrder){
+        const sel = selected === f.id ? "selected" : "";
+        const count = counts.get(f.id) || 0;
+        const pad = 10 + f.depth * 14;
+        html += `
+          <div class="folder-item ${sel}" data-folderkey="${escapeHtml(f.id)}" data-drop="1" style="padding-left:${pad}px">
+            <div class="folder-left">
+              <span>📁</span>
+              <span class="folder-name" title="${escapeHtml(folderPath(f.id))}">${escapeHtml(f.name)}</span>
+            </div>
+            <div class="folder-actions">
+              <span class="folder-count">${count}</span>
+              <button class="iconBtn" data-folder-rename="${escapeHtml(f.id)}" title="Переименовать">✏️</button>
+              <button class="iconBtn" data-folder-del="${escapeHtml(f.id)}" title="Удалить">🗑️</button>
+            </div>
+          </div>
+        `;
+      }
 
-        // Modal
-        let currentDocId = null;
-        let currentData = null;
+      folderListDiv.innerHTML = html;
 
-        function openModal(id, data) {
-            currentDocId = id;
-            currentData = data;
-            modalMsg.textContent = "";
-
-            const clientName = getClientName(id, data);
-            const dt = toDateAny(data.timestamp);
-
-            modalTitle.textContent = `Клиент: ${clientName}`;
-            modalSub.textContent = `ID: ${id} • Время: ${fmt(dt)} • Полей: ${Object.keys(data).length}`;
-
-            nameInput.value = (data.clientName ?? data.displayName ?? data.name ?? data["Имя"] ?? "").toString();
-
-            const ll = getLatLng(data);
-            if (ll) {
-                modal2gis.style.display = "inline-block";
-                modal2gis.href = to2gisLink(ll.lat, ll.lng);
-            } else {
-                modal2gis.style.display = "none";
-                modal2gis.removeAttribute("href");
-            }
-
-            kv.innerHTML = "";
-            const entries = Object.entries(data).sort(([a], [b]) => a.localeCompare(b, "ru"));
-            for (const [k, v] of entries) {
-                const item = document.createElement("div");
-                item.className = "item";
-                const val = (typeof v === "object" && v?.seconds != null && v?.nanoseconds != null)
-                    ? fmt(toDateAny(v))
-                    : String(v);
-                item.innerHTML = `<div class="k">${escapeHtml(k)}</div><div class="v">${escapeHtml(val)}</div>`;
-                kv.appendChild(item);
-            }
-
-            modalBack.style.display = "flex";
-        }
-
-        function closeModal() {
-            modalBack.style.display = "none";
-            currentDocId = null;
-            currentData = null;
-        }
-
-        modalClose.addEventListener("click", closeModal);
-        modalBack.addEventListener("click", (e) => { if (e.target === modalBack) closeModal(); });
-
-        nameSave.addEventListener("click", async () => {
-            if (!currentDocId) return;
-            const val = nameInput.value.trim();
-            try {
-                await updateDoc(doc(db, COLLECTION_NAME, currentDocId), { clientName: val });
-                modalMsg.innerHTML = `<span class="ok">✅ Сохранено</span>`;
-            } catch (err) {
-                modalMsg.innerHTML = `<span class="dangerText">❌ ${escapeHtml(err?.message || err)}</span>`;
-            }
+      // click handlers (select folder)
+      folderListDiv.querySelectorAll(".folder-item").forEach(el => {
+        el.addEventListener("click", (e) => {
+          const renameBtn = e.target.closest("[data-folder-rename]");
+          const delBtn = e.target.closest("[data-folder-del]");
+          if(renameBtn || delBtn) return; // handled below
+          const key = el.dataset.folderkey;
+          state.selectedFolder = key;
+          saveState();
+          renderFolders();
+          applyFiltersAndRender();
         });
 
-        copyIdBtn.addEventListener("click", async () => {
-            if (!currentDocId) return;
-            try {
-                await navigator.clipboard.writeText(currentDocId);
-                modalMsg.innerHTML = `<span class="ok">✅ ID скопирован</span>`;
-            } catch {
-                modalMsg.innerHTML = `<span class="dangerText">❌ Не удалось скопировать</span>`;
-            }
+        // drag & drop target
+        el.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          el.classList.add("dragOver");
         });
+        el.addEventListener("dragleave", () => el.classList.remove("dragOver"));
+        el.addEventListener("drop", async (e) => {
+          e.preventDefault();
+          el.classList.remove("dragOver");
+          const payload = e.dataTransfer.getData("text/plain");
+          if(!payload) return;
+          let ids = [];
+          try { ids = JSON.parse(payload); } catch { ids = []; }
+          if(!Array.isArray(ids) || ids.length === 0) return;
 
-        // Auth (ТОЛЬКО Email/Password)
-        btnSignIn.addEventListener("click", async () => {
-            authMsg.textContent = "";
-            const email = emailEl.value.trim();
-            const pass = passEl.value.trim();
-            if (!email || !pass) {
-                authMsg.innerHTML = `<span class="dangerText">Введите email и пароль.</span>`;
-                return;
-            }
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-            } catch (err) {
-                authMsg.innerHTML = `<span class="dangerText">${escapeHtml(err?.message || err)}</span>`;
-            }
+          const key = el.dataset.folderkey;
+          if(key === "ALL") return;
+          const toFolderId = key === "NONE" ? null : key;
+          await moveClientsToFolder(ids, toFolderId);
         });
+      });
 
-        btnSignOut.addEventListener("click", async () => { await signOut(auth); });
+      // rename/delete buttons
+      folderListDiv.querySelectorAll("[data-folder-rename]").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openFolderModal({ mode: "rename", folderId: btn.dataset.folderRename });
+        });
+      });
+      folderListDiv.querySelectorAll("[data-folder-del]").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          const id = btn.dataset.folderDel;
+          await deleteFolderFlow(id);
+        });
+      });
 
-        // Firestore realtime
-        let unsub = null;
-        let raw = []; // {id, data}
+      // update folder selects (client modal + bulk modal + folder parent select)
+      rebuildFolderSelects();
+    }
 
-        function applyFiltersAndRender() {
-            const needle = (qEl.value || "").trim().toLowerCase();
-            const range = rangeEl.value;
+    function rebuildFolderSelects(){
+      const optMove = [];
+      optMove.push(`<option value="">— Без папки —</option>`);
+      for(const f of folderOrder){
+        const indent = "—".repeat(Math.min(6, f.depth+1)) + " ";
+        optMove.push(`<option value="${escapeHtml(f.id)}">${escapeHtml(indent + f.name)}</option>`);
+      }
+      const htmlMove = optMove.join("");
+      folderSelect.innerHTML = htmlMove;
+      bulkFolderSelect.innerHTML = htmlMove;
 
-            const filtered = raw.filter(({ data }) => {
-                const d = toDateAny(data.timestamp);
-                if (!inRange(d, range)) return false;
-                if (!needle) return true;
-                return dataToSearchString(data).includes(needle);
-            });
+      const optParent = [];
+      optParent.push(`<option value="">— Корень —</option>`);
+      for(const f of folderOrder){
+        const indent = "—".repeat(Math.min(6, f.depth+1)) + " ";
+        optParent.push(`<option value="${escapeHtml(f.id)}">${escapeHtml(indent + f.name)}</option>`);
+      }
+      folderParentSelect.innerHTML = optParent.join("");
+    }
 
-            kpiTotal.textContent = String(filtered.length);
-            const geoCount = filtered.reduce((acc, it) => acc + (getLatLng(it.data) ? 1 : 0), 0);
-            kpiGeo.textContent = String(geoCount);
+    // --- Folder CRUD flows ---
+    let folderModalState = { mode: "create", folderId: null };
+    function openFolderModal({mode, folderId}){
+      folderModalState = { mode, folderId: folderId || null };
 
-            clearList();
-            if (filtered.length === 0) { showEmpty(true); return; }
-            showEmpty(false);
+      folderModalMsg.textContent = "";
+      folderNameInput.value = "";
+      folderParentSelect.value = "";
 
-            // Desktop
-            for (const { id, data } of filtered) {
-                const tr = document.createElement("tr");
-                const dt = toDateAny(data.timestamp);
-                const ua = data["User Agent"] ?? data["userAgent"] ?? "—";
-                const plat = data["Платформа"] ?? data["platform"] ?? "—";
-                const ll = getLatLng(data);
-
-                const clientName = getClientName(id, data);
-
-                tr.innerHTML = `
-              <td class="mono">${escapeHtml(fmt(dt))}</td>
-              <td>
-                <div><b>${escapeHtml(clientName)}</b></div>
-                <div class="hint mono">ID: ${escapeHtml(shortLabelFromId(id))}</div>
-              </td>
-              <td>
-                <div><b>${escapeHtml(plat)}</b></div>
-                <div style="color:var(--muted); font-size:12px">${escapeHtml(String(ua).slice(0, 120))}${String(ua).length > 120 ? "…" : ""}</div>
-              </td>
-              <td>
-                ${ll ? `<a class="linkBtn" target="_blank" rel="noopener" href="${to2gisLink(ll.lat, ll.lng)}">2GIS</a>
-                       <div class="hint mono" style="margin-top:6px">${ll.lat.toFixed(6)}, ${ll.lng.toFixed(6)}</div>`
-                        : `<span class="hint">—</span>`}
-              </td>
-              <td style="white-space:nowrap">
-                <button class="btn primary" data-open="${id}">Открыть</button>
-                <button class="btn danger" data-del="${id}">Удалить</button>
-              </td>
-            `;
-                tableBody.appendChild(tr);
-            }
-
-            // Mobile
-            for (const { id, data } of filtered) {
-                const dt = toDateAny(data.timestamp);
-                const ua = data["User Agent"] ?? data["userAgent"] ?? "—";
-                const lang = data["Язык"] ?? data["language"] ?? "—";
-                const ll = getLatLng(data);
-
-                const clientName = getClientName(id, data);
-
-                const card = document.createElement("div");
-                card.className = "clientCard";
-                card.innerHTML = `
-              <div class="clientHead">
-                <div class="clientTitle">
-                  <div class="main">${escapeHtml(clientName)}</div>
-                  <div class="sub">${escapeHtml(fmt(dt))} • <span class="mono">${escapeHtml(shortLabelFromId(id))}</span></div>
-                </div>
-                <div class="badge">${ll ? "📍 GEO" : "—"}</div>
-              </div>
-
-              <div class="miniRow">
-                <div class="mini"><b>Язык:</b> ${escapeHtml(lang)}</div>
-                <div class="mini"><b>UA:</b> ${escapeHtml(String(ua).slice(0, 60))}${String(ua).length > 60 ? "…" : ""}</div>
-              </div>
-
-              <div class="links">
-                ${ll ? `<a class="linkBtn" target="_blank" rel="noopener" href="${to2gisLink(ll.lat, ll.lng)}">Открыть 2GIS</a>` : ""}
-                <a class="linkBtn" href="#" data-open="${id}">Детали</a>
-                <a class="linkBtn dangerText" href="#" data-del="${id}">Удалить</a>
-              </div>
-            `;
-                cardsWrap.appendChild(card);
-            }
-
-            // Bind actions
-            document.querySelectorAll("[data-open]").forEach(btn => {
-                btn.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    const id = btn.getAttribute("data-open");
-                    const found = raw.find(x => x.id === id);
-                    if (found) openModal(found.id, found.data);
-                });
-            });
-
-            document.querySelectorAll("[data-del]").forEach(btn => {
-                btn.addEventListener("click", async (e) => {
-                    e.preventDefault();
-                    const id = btn.getAttribute("data-del");
-                    if (!confirm("Удалить запись?")) return;
-                    try {
-                        await deleteDoc(doc(db, COLLECTION_NAME, id));
-                    } catch (err) {
-                        alert("Ошибка удаления: " + (err?.message || err));
-                    }
-                });
-            });
+      if(mode === "create"){
+        folderModalTitle.textContent = "Создать папку";
+        const parentCandidate = (state.selectedFolder !== "ALL" && state.selectedFolder !== "NONE") ? state.selectedFolder : "";
+        folderParentSelect.value = parentCandidate || "";
+        folderModalSub.textContent = parentCandidate && foldersById[parentCandidate]
+          ? `Будет создана внутри: ${folderPath(parentCandidate)}`
+          : "Будет создана в корне";
+      } else {
+        const f = foldersById[folderId];
+        folderModalTitle.textContent = "Переименовать папку";
+        folderModalSub.textContent = f ? `Текущий путь: ${folderPath(folderId)}` : "—";
+        if(f){
+          folderNameInput.value = f.name || "";
+          folderParentSelect.value = f.parentId || "";
         }
+      }
+      folderModalBack.style.display = "flex";
+      setTimeout(() => folderNameInput.focus(), 50);
+    }
+    function closeFolderModal(){
+      folderModalBack.style.display = "none";
+    }
 
-        qEl.addEventListener("input", applyFiltersAndRender);
-        rangeEl.addEventListener("change", applyFiltersAndRender);
+    folderModalClose.addEventListener("click", closeFolderModal);
+    folderModalCancel.addEventListener("click", closeFolderModal);
+    folderModalBack.addEventListener("click", (e) => { if(e.target === folderModalBack) closeFolderModal(); });
 
-        modalDelete.addEventListener("click", async () => {
-            if (!currentDocId) return;
-            if (!confirm("Точно удалить запись?")) return;
-            try {
-                await deleteDoc(doc(db, COLLECTION_NAME, currentDocId));
-                modalMsg.innerHTML = `<span class="ok">✅ Удалено</span>`;
-                setTimeout(closeModal, 400);
-            } catch (err) {
-                modalMsg.innerHTML = `<span class="dangerText">❌ ${escapeHtml(err?.message || err)}</span>`;
-            }
+    folderModalSave.addEventListener("click", async () => {
+      const name = (folderNameInput.value || "").trim();
+      const parentId = folderParentSelect.value || null;
+
+      if(!name){
+        folderModalMsg.innerHTML = `<span class="dangerText">Введите название.</span>`;
+        return;
+      }
+      // basic cycle prevention on rename
+      if(folderModalState.mode === "rename" && folderModalState.folderId){
+        if(parentId === folderModalState.folderId){
+          folderModalMsg.innerHTML = `<span class="dangerText">Папка не может быть родителем сама себе.</span>`;
+          return;
+        }
+        // also prevent setting parent to descendant
+        const targetId = folderModalState.folderId;
+        let cur = parentId ? foldersById[parentId] : null;
+        let guard = 0;
+        while(cur && guard < 50){
+          if(cur.id === targetId){
+            folderModalMsg.innerHTML = `<span class="dangerText">Нельзя переместить папку внутрь её дочерней.</span>`;
+            return;
+          }
+          cur = cur.parentId ? foldersById[cur.parentId] : null;
+          guard++;
+        }
+      }
+
+      try{
+        folderModalMsg.textContent = "⏳ Сохраняю…";
+        if(folderModalState.mode === "create"){
+          await addDoc(collection(db, FOLDERS_COLLECTION), {
+            name,
+            parentId: parentId || null,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+          folderModalMsg.innerHTML = `<span class="ok">✅ Папка создана</span>`;
+          setTimeout(closeFolderModal, 350);
+        } else {
+          await updateDoc(doc(db, FOLDERS_COLLECTION, folderModalState.folderId), {
+            name,
+            parentId: parentId || null,
+            updatedAt: serverTimestamp()
+          });
+          folderModalMsg.innerHTML = `<span class="ok">✅ Обновлено</span>`;
+          setTimeout(closeFolderModal, 350);
+        }
+      } catch(err){
+        folderModalMsg.innerHTML = `<span class="dangerText">❌ ${escapeHtml(err?.message || err)}</span>`;
+      }
+    });
+
+    createFolderBtn.addEventListener("click", () => openFolderModal({ mode: "create" }));
+
+    async function deleteFolderFlow(folderId){
+      const f = foldersById[folderId];
+      if(!f){ alert("Папка не найдена."); return; }
+
+      const hasChildren = (folderChildren.get(folderId) || []).length > 0;
+      if(hasChildren){
+        alert("В папке есть вложенные папки. Сначала удалите/переместите их.");
+        return;
+      }
+
+      const clientsInFolder = raw.filter(x => x.data.folderId === folderId).map(x => x.id);
+
+      let msg = `Удалить папку “${f.name}”?`;
+      if(clientsInFolder.length > 0){
+        msg += `\n\nВ папке ${clientsInFolder.length} элемент(ов). Их можно переместить в “Без папки”, затем удалить папку.`;
+      }
+      if(!confirm(msg)) return;
+
+      try{
+        if(clientsInFolder.length > 0){
+          if(!confirm(`Переместить ${clientsInFolder.length} элемент(ов) в “Без папки”?`)) return;
+          await moveClientsToFolder(clientsInFolder, null, {silent:true});
+        }
+        await deleteDoc(doc(db, FOLDERS_COLLECTION, folderId));
+      } catch(err){
+        alert("Ошибка удаления папки: " + (err?.message || err));
+      }
+    }
+
+    // --- Filters state wiring ---
+    function applyStateToInputs(){
+      qEl.value = state.filters.q;
+      rangeEl.value = state.filters.range;
+      sortFieldEl.value = state.filters.sortField;
+
+      sortDirBtn.textContent = state.filters.sortDir === "asc" ? "⬆️ возр." : "⬇️ убыв.";
+      setFiltersCollapsed(!!state.ui.filtersCollapsed);
+
+      updateAccMeta();
+      updateFiltersHeaderMeta();
+    }
+
+    function captureInputsToState(){
+      state.filters.q = (qEl.value || "").trim();
+      state.filters.range = rangeEl.value || "all";
+      state.filters.sortField = sortFieldEl.value || "date";
+      saveState();
+      updateAccMeta();
+      updateFiltersHeaderMeta();
+    }
+
+    function resetFilters(){
+      state.filters = { ...defaultState.filters };
+      saveState();
+      applyStateToInputs();
+      applyFiltersAndRender();
+    }
+
+    sortDirBtn.addEventListener("click", () => {
+      state.filters.sortDir = state.filters.sortDir === "asc" ? "desc" : "asc";
+      saveState();
+      applyStateToInputs();
+      applyFiltersAndRender();
+    });
+
+    btnApply.addEventListener("click", () => {
+      captureInputsToState();
+      applyFiltersAndRender();
+    });
+    btnReset.addEventListener("click", resetFilters);
+    emptyResetBtn.addEventListener("click", resetFilters);
+
+    // If you want instant filtering, keep listeners:
+    qEl.addEventListener("input", () => { captureInputsToState(); applyFiltersAndRender(); });
+    rangeEl.addEventListener("change", () => { captureInputsToState(); applyFiltersAndRender(); });
+    sortFieldEl.addEventListener("change", () => { captureInputsToState(); applyFiltersAndRender(); });
+
+    filtersHeader.addEventListener("click", () => setFiltersCollapsed(!state.ui.filtersCollapsed));
+
+    function updateAccMeta(){
+      const q = (state.filters.q || "");
+      document.getElementById("accMetaSearch").textContent = q ? `“${q.slice(0,22)}${q.length>22?"…":""}”` : "—";
+      document.getElementById("accMetaPeriod").textContent = rangeEl.options[rangeEl.selectedIndex]?.textContent || "—";
+
+      const fieldLabel = sortFieldEl.options[sortFieldEl.selectedIndex]?.textContent || "—";
+      const dirLabel = state.filters.sortDir === "asc" ? "возр." : "убыв.";
+      document.getElementById("accMetaSort").textContent = `${fieldLabel} • ${dirLabel}`;
+    }
+    function updateFiltersHeaderMeta(){
+      const active = [];
+      if(state.filters.q) active.push("поиск");
+      if(state.filters.range !== "all") active.push("период");
+      if(state.filters.sortField !== "date" || state.filters.sortDir !== "desc") active.push("сортировка");
+      filtersHeaderMeta.textContent = active.length ? `активно: ${active.join(", ")}` : "ничего не выбрано";
+    }
+
+    // --- Selection ---
+    function updateBulkUI(){
+      const n = selectedIds.size;
+      if(n > 0){
+        bulkBar.style.display = "flex";
+        selPill.textContent = `Выбрано: ${n}`;
+      } else {
+        bulkBar.style.display = "none";
+        selPill.textContent = "Выбрано: 0";
+      }
+      // Update checkboxes visual state
+      document.querySelectorAll("[data-sel]").forEach(ch => {
+        const id = ch.getAttribute("data-sel");
+        ch.checked = selectedIds.has(id);
+      });
+    }
+
+    function toggleSelection(id, checked){
+      if(checked) selectedIds.add(id); else selectedIds.delete(id);
+      updateBulkUI();
+    }
+    function clearSelection(){
+      selectedIds.clear();
+      updateBulkUI();
+    }
+
+    bulkClearBtn.addEventListener("click", clearSelection);
+
+    // Bulk move modal
+    function openBulkModal(){
+      bulkModalMsg.textContent = "";
+      bulkModalSub.textContent = `Выбрано: ${selectedIds.size}`;
+      bulkFolderSelect.value = "";
+      bulkModalBack.style.display = "flex";
+    }
+    function closeBulkModal(){ bulkModalBack.style.display = "none"; }
+    bulkMoveBtn.addEventListener("click", openBulkModal);
+    bulkModalClose.addEventListener("click", closeBulkModal);
+    bulkModalBack.addEventListener("click", (e) => { if(e.target === bulkModalBack) closeBulkModal(); });
+
+    bulkMoveConfirm.addEventListener("click", async () => {
+      const ids = Array.from(selectedIds);
+      if(ids.length === 0) return;
+      const toFolderId = bulkFolderSelect.value || null;
+      await moveClientsToFolder(ids, toFolderId);
+      closeBulkModal();
+      clearSelection();
+    });
+
+    // --- Rendering ---
+    function setEmptyState(kind){
+      // kind: "noItems" | "noResults"
+      if(kind === "noItems"){
+        emptyTitle.textContent = "Нет элементов";
+        emptyText.textContent = "В коллекции Clients пока нет записей. Как только появятся новые клиенты — они появятся здесь автоматически.";
+      } else {
+        emptyTitle.textContent = "Нет результатов";
+        emptyText.textContent = "По текущим фильтрам/папке ничего не найдено. Попробуйте сбросить фильтры или выбрать другую папку.";
+      }
+      showEmptyBox(true);
+    }
+
+    function applyFiltersAndRender(){
+      const needle = (state.filters.q || "").trim().toLowerCase();
+      const range = state.filters.range;
+      const sortField = state.filters.sortField;
+      const sortDir = state.filters.sortDir;
+
+      const folderKey = state.selectedFolder;
+
+      let filtered = raw.filter(({data}) => {
+        // folder filter
+        if(folderKey === "NONE"){
+          if(data.folderId) return false;
+        } else if(folderKey !== "ALL"){
+          if(data.folderId !== folderKey) return false;
+        }
+        const d = toDateAny(data.timestamp);
+        if(!inRange(d, range)) return false;
+        if(!needle) return true;
+        return dataToSearchString(data).includes(needle);
+      });
+
+      // Sort
+      filtered.sort((a,b) => {
+        const da = toDateAny(a.data.timestamp);
+        const db = toDateAny(b.data.timestamp);
+
+        const nameA = getClientName(a.id, a.data).toLowerCase();
+        const nameB = getClientName(b.id, b.data).toLowerCase();
+
+        const folderA = getFolderLabelForClient(a.data).toLowerCase();
+        const folderB = getFolderLabelForClient(b.data).toLowerCase();
+
+        let cmp = 0;
+        switch(sortField){
+          case "date": cmp = (da?.getTime() || 0) - (db?.getTime() || 0); break;
+          case "name": cmp = nameA.localeCompare(nameB, "ru"); break;
+          case "folder": cmp = folderA.localeCompare(folderB, "ru"); break;
+          default: cmp = 0;
+        }
+        return sortDir === "asc" ? cmp : -cmp;
+      });
+
+      // KPIs
+      kpiTotal.textContent = String(filtered.length);
+      const geoCount = filtered.reduce((acc, it) => acc + (getLatLng(it.data) ? 1 : 0), 0);
+      kpiGeo.textContent = String(geoCount);
+
+      clearList();
+      showEmptyBox(false);
+
+      if(raw.length === 0){
+        setEmptyState("noItems");
+        return;
+      }
+      if(filtered.length === 0){
+        setEmptyState("noResults");
+        return;
+      }
+
+      // Desktop
+      for(const {id, data} of filtered){
+        const tr = document.createElement("tr");
+        tr.draggable = true;
+        tr.dataset.dragId = id;
+
+        const dt = toDateAny(data.timestamp);
+        const ua = data["User Agent"] ?? data["userAgent"] ?? "—";
+        const plat = data["Платформа"] ?? data["platform"] ?? "—";
+        const ll = getLatLng(data);
+        const clientName = getClientName(id, data);
+        const folderLabel = getFolderLabelForClient(data);
+
+        tr.innerHTML = `
+          <td>
+            <input class="chk" type="checkbox" data-sel="${escapeHtml(id)}" />
+          </td>
+          <td class="mono">${escapeHtml(fmt(dt))}</td>
+          <td>
+            <div><b>${escapeHtml(clientName)}</b></div>
+            <div class="hint mono">ID: ${escapeHtml(shortLabelFromId(id))}</div>
+          </td>
+          <td>
+            <div><b>${escapeHtml(plat)}</b></div>
+            <div style="color:var(--muted); font-size:12px">${escapeHtml(String(ua).slice(0, 120))}${String(ua).length > 120 ? "…" : ""}</div>
+          </td>
+          <td>
+            ${ll ? `<a class="linkBtn" target="_blank" rel="noopener" href="${to2gisLink(ll.lat, ll.lng)}">2GIS</a>
+                   <div class="hint mono" style="margin-top:6px">${ll.lat.toFixed(6)}, ${ll.lng.toFixed(6)}</div>`
+                : `<span class="hint">—</span>`}
+          </td>
+          <td><span class="badge">📁 ${escapeHtml(folderLabel)}</span></td>
+          <td style="white-space:nowrap">
+            <button class="btn primary" data-open="${escapeHtml(id)}">Открыть</button>
+            <button class="btn danger" data-del="${escapeHtml(id)}">Удалить</button>
+          </td>
+        `;
+        tableBody.appendChild(tr);
+      }
+
+      // Mobile cards
+      for(const {id, data} of filtered){
+        const dt = toDateAny(data.timestamp);
+        const lang = data["Язык"] ?? data["language"] ?? "—";
+        const ll = getLatLng(data);
+        const clientName = getClientName(id, data);
+        const folderLabel = getFolderLabelForClient(data);
+
+        const card = document.createElement("div");
+        card.className = "clientCard";
+        card.draggable = true;
+        card.dataset.dragId = id;
+
+        card.innerHTML = `
+          <div class="clientHead">
+            <div class="clientTitle">
+              <div class="main">${escapeHtml(clientName)}</div>
+              <div class="sub">${escapeHtml(fmt(dt))} • <span class="mono">${escapeHtml(shortLabelFromId(id))}</span></div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <input class="chk" type="checkbox" data-sel="${escapeHtml(id)}" />
+              <div class="badge">${ll ? "📍 GEO" : "—"}</div>
+            </div>
+          </div>
+
+          <div class="miniRow">
+            <div class="mini"><b>Язык:</b> ${escapeHtml(lang)}</div>
+            <div class="mini"><b>Папка:</b> ${escapeHtml(folderLabel)}</div>
+          </div>
+
+          <div class="links">
+            ${ll ? `<a class="linkBtn" target="_blank" rel="noopener" href="${to2gisLink(ll.lat, ll.lng)}">Открыть 2GIS</a>` : ""}
+            <a class="linkBtn" href="#" data-open="${escapeHtml(id)}">Детали</a>
+            <a class="linkBtn dangerText" href="#" data-del="${escapeHtml(id)}">Удалить</a>
+          </div>
+        `;
+        cardsWrap.appendChild(card);
+      }
+
+      // Bind checkboxes
+      document.querySelectorAll("[data-sel]").forEach(ch => {
+        const id = ch.getAttribute("data-sel");
+        ch.checked = selectedIds.has(id);
+        ch.addEventListener("change", () => toggleSelection(id, ch.checked));
+      });
+
+      // Bind open/delete
+      document.querySelectorAll("[data-open]").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const id = btn.getAttribute("data-open");
+          const found = raw.find(x => x.id === id);
+          if(found) openClientModal(found.id, found.data);
         });
+      });
 
-        onAuthStateChanged(auth, (user) => {
-            if (unsub) { unsub(); unsub = null; }
-            raw = [];
-            clearList();
-            showEmpty(false);
-
-            if (!user) {
-                statusLine.textContent = "⏳ Ожидание входа…";
-                authBox.style.display = "block";
-                filtersBox.style.display = "none";
-                userPill.style.display = "none";
-                btnSignOut.style.display = "none";
-                return;
-            }
-
-            authBox.style.display = "none";
-            filtersBox.style.display = "block";
-            userPill.style.display = "block";
-            btnSignOut.style.display = "inline-block";
-            userPill.textContent = `Вошли: ${user.email || user.uid}`;
-            statusLine.textContent = "🟢 Загружаю данные…";
-
-            const qy = query(collection(db, COLLECTION_NAME), orderBy("timestamp", "desc"));
-            unsub = onSnapshot(qy, (snap) => {
-                raw = snap.docs.map(d => ({ id: d.id, data: d.data() }));
-                statusLine.textContent = `🟢 Готово • ${raw.length} записей`;
-                applyFiltersAndRender();
-            }, (err) => {
-                statusLine.innerHTML = `<span class="dangerText">❌ ${escapeHtml(err?.message || err)}</span>`;
-            });
+      document.querySelectorAll("[data-del]").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          const id = btn.getAttribute("data-del");
+          if(!confirm("Удалить запись?")) return;
+          try{
+            await deleteDoc(doc(db, CLIENTS_COLLECTION, id));
+          } catch(err){
+            alert("Ошибка удаления: " + (err?.message || err));
+          }
         });
-    </script>
+      });
 
-   
+      // Drag handlers on rows/cards
+      document.querySelectorAll("[data-drag-id]").forEach(el => {
+        el.addEventListener("dragstart", (e) => {
+          const id = el.dataset.dragId;
+          const ids = selectedIds.has(id) ? Array.from(selectedIds) : [id];
+          // If dragging an unselected item, implicitly select only it (common UX)
+          if(!selectedIds.has(id)){
+            selectedIds.clear();
+            selectedIds.add(id);
+            updateBulkUI();
+          }
+          e.dataTransfer.setData("text/plain", JSON.stringify(ids));
+          e.dataTransfer.effectAllowed = "move";
+        });
+      });
+
+      updateBulkUI();
+    }
+
+    // --- Firestore updates: moving clients ---
+    async function moveClientsToFolder(clientIds, folderId, opts={silent:false}){
+      if(!clientIds || clientIds.length === 0) return;
+      const fName = folderId && foldersById[folderId] ? foldersById[folderId].name : null;
+
+      try{
+        if(!opts.silent){
+          statusLine.textContent = "⏳ Перемещаю…";
+        }
+        const batch = writeBatch(db);
+        for(const id of clientIds){
+          batch.update(doc(db, CLIENTS_COLLECTION, id), {
+            folderId: folderId || null,
+            folder: fName || null,
+            folderUpdatedAt: serverTimestamp()
+          });
+        }
+        await batch.commit();
+        if(!opts.silent){
+          statusLine.textContent = "✅ Перемещено";
+          setTimeout(() => statusLine.textContent = `🟢 Готово • ${raw.length} записей`, 600);
+        }
+      } catch(err){
+        if(!opts.silent){
+          alert("Ошибка перемещения: " + (err?.message || err));
+          statusLine.textContent = `🟢 Готово • ${raw.length} записей`;
+        } else {
+          throw err;
+        }
+      }
+    }
+
+    // --- Client modal ---
+    let currentDocId = null;
+    let currentData = null;
+
+    function openClientModal(id, data){
+      currentDocId = id;
+      currentData = data;
+      modalMsg.textContent = "";
+
+      const clientName = getClientName(id, data);
+      const dt = toDateAny(data.timestamp);
+
+      modalTitle.textContent = `Клиент: ${clientName}`;
+      modalSub.textContent = `ID: ${id} • Время: ${fmt(dt)} • Полей: ${Object.keys(data).length}`;
+
+      nameInput.value = (data.clientName ?? data.displayName ?? data.name ?? data["Имя"] ?? "").toString();
+
+      const ll = getLatLng(data);
+      if(ll){
+        modal2gis.style.display = "inline-block";
+        modal2gis.href = to2gisLink(ll.lat, ll.lng);
+      } else {
+        modal2gis.style.display = "none";
+        modal2gis.removeAttribute("href");
+      }
+
+      // set folder
+      folderSelect.value = data.folderId || "";
+      kv.innerHTML = "";
+      const entries = Object.entries(data).sort(([a],[b]) => a.localeCompare(b, "ru"));
+      for(const [k,v] of entries){
+        const item = document.createElement("div");
+        item.className = "item";
+        const val = (typeof v === "object" && v?.seconds != null && v?.nanoseconds != null)
+          ? fmt(toDateAny(v))
+          : String(v);
+        item.innerHTML = `<div class="k">${escapeHtml(k)}</div><div class="v">${escapeHtml(val)}</div>`;
+        kv.appendChild(item);
+      }
+
+      modalBack.style.display = "flex";
+    }
+
+    function closeClientModal(){
+      modalBack.style.display = "none";
+      currentDocId = null;
+      currentData = null;
+    }
+
+    modalClose.addEventListener("click", closeClientModal);
+    modalBack.addEventListener("click", (e) => { if(e.target === modalBack) closeClientModal(); });
+
+    nameSave.addEventListener("click", async () => {
+      if(!currentDocId) return;
+      const val = nameInput.value.trim();
+      try{
+        await updateDoc(doc(db, CLIENTS_COLLECTION, currentDocId), { clientName: val });
+        modalMsg.innerHTML = `<span class="ok">✅ Сохранено</span>`;
+      } catch(err){
+        modalMsg.innerHTML = `<span class="dangerText">❌ ${escapeHtml(err?.message || err)}</span>`;
+      }
+    });
+
+    copyIdBtn.addEventListener("click", async () => {
+      if(!currentDocId) return;
+      try{
+        await navigator.clipboard.writeText(currentDocId);
+        modalMsg.innerHTML = `<span class="ok">✅ ID скопирован</span>`;
+      } catch {
+        modalMsg.innerHTML = `<span class="dangerText">❌ Не удалось скопировать</span>`;
+      }
+    });
+
+    moveToFolderBtn.addEventListener("click", async () => {
+      if(!currentDocId) return;
+      const newFolderId = folderSelect.value || null;
+      try{
+        await moveClientsToFolder([currentDocId], newFolderId);
+        modalMsg.innerHTML = `<span class="ok">✅ Перемещено</span>`;
+        if(currentData){
+          currentData.folderId = newFolderId;
+          currentData.folder = newFolderId && foldersById[newFolderId] ? foldersById[newFolderId].name : null;
+        }
+      } catch(err){
+        modalMsg.innerHTML = `<span class="dangerText">❌ ${escapeHtml(err?.message || err)}</span>`;
+      }
+    });
+
+    modalDelete.addEventListener("click", async () => {
+      if(!currentDocId) return;
+      if(!confirm("Точно удалить запись?")) return;
+      try{
+        await deleteDoc(doc(db, CLIENTS_COLLECTION, currentDocId));
+        modalMsg.innerHTML = `<span class="ok">✅ Удалено</span>`;
+        setTimeout(closeClientModal, 400);
+      } catch(err){
+        modalMsg.innerHTML = `<span class="dangerText">❌ ${escapeHtml(err?.message || err)}</span>`;
+      }
+    });
+
+    // --- Auth ---
+    btnSignIn.addEventListener("click", async () => {
+      authMsg.textContent = "";
+      const email = emailEl.value.trim();
+      const pass = passEl.value.trim();
+      if(!email || !pass){
+        authMsg.innerHTML = `<span class="dangerText">Введите email и пароль.</span>`;
+        return;
+      }
+      try{
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch(err){
+        authMsg.innerHTML = `<span class="dangerText">${escapeHtml(err?.message || err)}</span>`;
+      }
+    });
+
+    btnSignOut.addEventListener("click", async () => { await signOut(auth); });
+
+    // --- Subscriptions ---
+    onAuthStateChanged(auth, (user) => {
+      if(unsubClients){ unsubClients(); unsubClients = null; }
+      if(unsubFolders){ unsubFolders(); unsubFolders = null; }
+      raw = [];
+      foldersArr = [];
+      clearList();
+      showEmptyBox(false);
+      clearSelection();
+
+      if(!user){
+        statusLine.textContent = "⏳ Ожидание входа…";
+        authBox.style.display = "block";
+        filtersBox.style.display = "none";
+        foldersPanel.style.display = "none";
+        userPill.style.display = "none";
+        btnSignOut.style.display = "none";
+        return;
+      }
+
+      authBox.style.display = "none";
+      filtersBox.style.display = "block";
+      foldersPanel.style.display = "block";
+      userPill.style.display = "block";
+      btnSignOut.style.display = "inline-block";
+      userPill.textContent = `Вошли: ${user.email || user.uid}`;
+
+      // Apply saved UI state
+      applyStateToInputs();
+      setupAccordions();
+
+      statusLine.textContent = "🟢 Загружаю данные…";
+
+      // folders realtime
+      const fQ = query(collection(db, FOLDERS_COLLECTION), orderBy("name", "asc"));
+      unsubFolders = onSnapshot(fQ, (snap) => {
+        foldersArr = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderFolders();
+        applyFiltersAndRender(); // update folder labels
+      }, (err) => {
+        console.error(err);
+      });
+
+      // clients realtime
+      const cQ = query(collection(db, CLIENTS_COLLECTION), orderBy("timestamp", "desc"));
+      unsubClients = onSnapshot(cQ, (snap) => {
+        raw = snap.docs.map(d => ({ id: d.id, data: d.data() }));
+        statusLine.textContent = `🟢 Готово • ${raw.length} записей`;
+        renderFolders();
+        applyFiltersAndRender();
+      }, (err) => {
+        statusLine.innerHTML = `<span class="dangerText">❌ ${escapeHtml(err?.message || err)}</span>`;
+      });
+    });
+  </script>
 </body>
 </html>

