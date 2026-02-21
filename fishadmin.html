@@ -144,9 +144,14 @@
     }
 
     /* Folders sidebar */
-    .folderHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+    .folderHeader{display:flex;gap:10px;margin-bottom:8px}
     .folderTitle{font-weight:900;font-size:16px}
-    .folder-list{display:flex;flex-direction:column;gap:6px;margin:10px 0 0}
+      .folder-list {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          margin: 10px 0 20px
+      }
     .folder-item{
       display:flex;align-items:center;justify-content:space-between;gap:10px;
       padding:8px 10px;border-radius:14px;background:rgba(255,255,255,.04);
@@ -206,6 +211,7 @@
     .kv .item{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:14px;padding:10px}
     .kv .item .k{font-size:12px;color:var(--muted);margin-bottom:6px}
     .kv .item .v{font-size:13px;word-break:break-word}
+    .kv .item .vClamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 
     /* Empty state */
     .emptyState{
@@ -219,13 +225,220 @@
     .emptyState .h{font-weight:900;margin-bottom:6px}
     .emptyState .p{color:var(--muted);font-size:12px;line-height:1.45}
     .muted{color:var(--muted)}
+  
+/* ---------- Mobile-first additions (320–430) + tablet (>=768) ---------- */
+:focus-visible{outline:2px solid rgba(106,163,255,.75); outline-offset:2px}
+@media (prefers-reduced-motion: reduce){
+  *{scroll-behavior:auto !important; transition:none !important; animation:none !important}
+}
+
+/* a11y helper */
+.srOnly{
+  position:absolute !important;
+  width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+
+/* Chips / swipe carousel */
+.chips{
+  display:flex; gap:8px;
+  overflow-x:auto; overflow-y:hidden;
+  padding:2px 2px 10px;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x mandatory;
+  scrollbar-width:none;
+}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  scroll-snap-align:start;
+  display:inline-flex; align-items:center; gap:8px;
+  padding:0 12px;
+  height:44px; /* >=44px tap target */
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  font-weight:800;
+  cursor:pointer;
+  flex:0 0 auto;
+}
+.chip:hover{background:rgba(255,255,255,.08)}
+.chip.selected{border-color:rgba(106,163,255,.55); background:rgba(106,163,255,.14)}
+.chip .chipCount{
+  font-size:12px;
+  color:var(--muted);
+  border:1px solid rgba(255,255,255,.10);
+  padding:2px 8px;
+  border-radius:999px;
+  background:rgba(0,0,0,.25);
+}
+
+/* Bottom navigation */
+.bottomNav{
+  position:fixed; left:0; right:0; bottom:0;
+  z-index:40;
+  display:none;
+  padding:10px 10px calc(10px + env(
+        <!-- Mobile quick controls (поиск/папки/период) -->
+        <div class="mobileQuick" id="mobileQuick">
+          <div class="quickRow">
+            <div class="field" style="flex:1">
+              <label class="srOnly" for="qMobile">Поиск</label>
+              <input id="qMobile" type="text" placeholder="Поиск… (Android, UID, iPhone…)" />
+            </div>
+            <button id="openFiltersBtn" class="iconBtn iconBtnLg" type="button" aria-label="Открыть фильтры">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M3 5h18M6 12h12M10 19h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <div id="folderChips" class="chips" aria-label="Папки (свайп)"></div>
+
+          <div id="rangeChips" class="chips" aria-label="Период">
+            <button class="chip" type="button" data-range="all">Все</button>
+            <button class="chip" type="button" data-range="24h">24ч</button>
+            <button class="chip" type="button" data-range="7d">7д</button>
+            <button class="chip" type="button" data-range="30d">30д</button>
+          </div>
+        </div>
+safe-area-inset-bottom));
+  background:rgba(17,26,51,.86);
+  border-top:1px solid var(--line);
+  backdrop-filter:blur(12px);
+}
+.bottomNav .navRow{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:8px;
+}
+.navBtn{
+  height:52px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px;
+  cursor:pointer;
+}
+.navBtn svg{width:20px;height:20px}
+.navBtn .l{font-size:11px; color:var(--muted); font-weight:750}
+.navBtn.active{border-color:rgba(106,163,255,.55); background:rgba(106,163,255,.14)}
+.navBtn:active{transform:translateY(1px)}
+
+/* Drawer / bottom sheet */
+.drawerBack{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:flex-end;
+  z-index:60;
+}
+.drawer{
+  width:100%;
+  max-height:92vh;
+  background:rgba(17,26,51,.92);
+  border:1px solid var(--line);
+  border-bottom:0;
+  border-radius:18px 18px 0 0;
+  box-shadow:var(--shadow);
+  padding:12px 12px calc(14px + env(safe-area-inset-bottom));
+  overflow:auto;
+  backdrop-filter:blur(14px);
+}
+.drawerTop{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:6px 4px 10px;
+  position:sticky; top:0;
+  background:linear-gradient(to bottom, rgba(17,26,51,.96), rgba(17,26,51,.70));
+  backdrop-filter:blur(10px);
+  z-index:1;
+}
+.drawerTitle{font-weight:900}
+.iconBtnLg{
+  height:44px; width:44px; border-radius:14px;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.iconBtnLg svg{width:20px;height:20px}
+
+/* Make panels look native when mounted into drawer */
+.inDrawer{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+}
+
+/* Mobile quick controls above list */
+.mobileQuick{display:none}
+.quickRow{display:flex; gap:10px; align-items:end}
+.quickRow .field label{display:none}
+.quickRow input{min-height:44px}
+.quickRow .iconBtnLg{flex:0 0 auto}
+
+/* Tablet layout (>=768): 2 columns + stacked side panels */
+@media (min-width: 768px) and (max-width: 1019px){
+  .layout{
+    grid-template-columns: 320px 1fr;
+    grid-template-areas:
+      "folders list"
+      "right   list";
+    align-items:start;
+  }
+  #foldersPanel{grid-area:folders; display:block}
+  #listPanel{grid-area:list}
+  #rightPanel{grid-area:right}
+}
+
+/* Mobile (<=767): single column + bottom nav + drawers */
+@media (max-width: 767px){
+  .wrap{padding:12px}
+  .topbar{top:8px;border-radius:16px;padding:12px}
+  .brand .t{font-size:14px; line-height:1.15}
+  .brand .s{display:none} /* длинная строка конфигов уходит в “Ещё” */
+  .actions{gap:8px}
+  .btn, .linkBtn, input, select{min-height:44px}
+  .btn{padding:10px 12px}
+  .pill{max-width:60vw}
+
+  /* на мобиле работаем “Клиенты first”, фильтры/папки — в шторках */
+  #foldersPanel{display:none}
+  body.authed #rightPanel{display:none}
+
+  .mobileQuick{display:block; margin-top:10px}
+  .links{display:grid; grid-template-columns:1fr; gap:10px}
+  .linkBtn{justify-content:center}
+  .clientHead{gap:12px}
+  .clientTitle .main{font-size:15px}
+
+  /* Bulk actions — липкая панель над нижней навигацией */
+  .bulkBar{
+    position:sticky;
+    bottom: calc(84px + env(safe-area-inset-bottom));
+    z-index:4;
+  }
+
+  /* Modals as bottom sheets */
+  .modalBack{align-items:flex-end; justify-content:stretch; padding:0}
+  .modal{
+    width:100%;
+    max-height:92vh;
+    border-radius:18px 18px 0 0;
+    border-bottom:0;
+  }
+
+  .bottomNav{display:block}
+  body:not(.authed) .bottomNav{display:none}
+}
+
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
-        <div class="t">Админ-панель Clients + папки</div>
+        <div class="t">Clients Fishing</div>
         <div class="s">Firestore: <span class="mono">(default)</span> • Collections: <span class="mono">Clients</span> + <span class="mono">Folders</span></div>
       </div>
       <div class="actions">
@@ -239,9 +452,36 @@
       <div id="foldersPanel" class="card" style="display:none">
         <div class="folderHeader">
           <div class="folderTitle">Папки</div>
-          <button id="createFolderBtn" class="btn" style="padding:8px 12px;">+ Создать</button>
+          <button id="createFolderBtn" class="btn" style="padding:8px 12px
+
+  <nav class="bottomNav" id="bottomNav" aria-label="Навигация">
+    <div class="navRow">
+  
+     
+      <button class="navBtn" id="navFilters" type="button" aria-label="Фильтры">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 5h18l-7 8v5l-4 2v-7L3 5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+        <div class="l">Фильтры</div>
+      </button>
+     
+    </div>
+  </nav>
+
+  <div id="drawerBack" class="drawerBack" aria-hidden="true">
+    <div class="drawer" role="dialog" aria-modal="true" aria-label="Панель">
+      <div class="drawerTop">
+        <div class="drawerTitle" id="drawerTitle">—</div>
+        <button id="drawerClose" class="iconBtn iconBtnLg" type="button" aria-label="Закрыть">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div id="drawerBody"></div>
+    </div>
+  </div>Создать</button>
         </div>
-        <div class="hint" style="margin-top:0">Перетаскивайте элементы в папки. Поддерживается multi-select.</div>
         <div id="folderList" class="folder-list"></div>
         <div id="foldersEmpty" class="hint" style="display:none">Папок пока нет — создайте первую (можно делать вложенные).</div>
       </div>
@@ -615,6 +855,23 @@
     const folderNameInput = document.getElementById("folderNameInput");
     const folderParentSelect = document.getElementById("folderParentSelect");
 
+
+    // --- Mobile UI DOM ---
+    const qMobile = document.getElementById("qMobile");
+    const openFiltersBtn = document.getElementById("openFiltersBtn");
+    const folderChips = document.getElementById("folderChips");
+    const rangeChips = document.getElementById("rangeChips");
+
+    const navClients = document.getElementById("navClients");
+    const navFolders = document.getElementById("navFolders");
+    const navFilters = document.getElementById("navFilters");
+    const navMore = document.getElementById("navMore");
+
+    const drawerBack = document.getElementById("drawerBack");
+    const drawerTitle = document.getElementById("drawerTitle");
+    const drawerBody = document.getElementById("drawerBody");
+    const drawerClose = document.getElementById("drawerClose");
+
     // --- localStorage state ---
     const LS_KEY = "fishadmin_state_v2";
     const defaultState = {
@@ -714,6 +971,181 @@
         });
       });
     }
+
+    // --- Mobile UI (bottom nav + drawer + swipe chips) ---
+    let drawerMode = null;
+    const mountInfo = new Map(); // node -> {parent, next}
+
+    function setActiveNav(key){
+      const map = { clients: navClients, folders: navFolders, filters: navFilters, more: navMore };
+      Object.entries(map).forEach(([k, el]) => {
+        if(!el) return;
+        el.classList.toggle("active", k === key);
+      });
+    }
+
+    function rememberMount(node){
+      if(!node || mountInfo.has(node)) return;
+      mountInfo.set(node, { parent: node.parentNode, next: node.nextSibling });
+    }
+
+    function mountToDrawer(node){
+      if(!node) return;
+      rememberMount(node);
+      node.classList.add("inDrawer");
+      drawerBody.appendChild(node);
+      node.style.display = "block";
+    }
+
+    function restoreFromDrawer(node){
+      if(!node) return;
+      const info = mountInfo.get(node);
+      node.classList.remove("inDrawer");
+      if(!info || !info.parent) return;
+      if(info.next) info.parent.insertBefore(node, info.next);
+      else info.parent.appendChild(node);
+    }
+
+    function openDrawer(mode){
+      if(!drawerBack || !drawerBody) return;
+      drawerMode = mode;
+      drawerBody.innerHTML = "";
+      drawerBack.style.display = "flex";
+      drawerBack.setAttribute("aria-hidden", "false");
+      document.body.classList.add("drawerOpen");
+
+      if(mode === "folders"){
+        drawerTitle.textContent = "Папки";
+        mountToDrawer(foldersPanel);
+      } else if(mode === "filters"){
+        drawerTitle.textContent = "Фильтры";
+        mountToDrawer(rightPanel);
+        // на всякий — скролл на начало фильтров
+        const el = document.getElementById("filtersHeader");
+        el && el.scrollIntoView({block:"start"});
+      } else if(mode === "more"){
+        drawerTitle.textContent = "Ещё";
+        const box = document.createElement("div");
+        box.className = "card";
+        box.style.background = "rgba(255,255,255,.04)";
+        box.style.borderRadius = "14px";
+        box.style.padding = "12px";
+        const email = (userPill?.textContent || "").replace("Вошли:", "").trim();
+        box.innerHTML = `
+          <div style="font-weight:900; font-size:16px; margin-bottom:8px;">Аккаунт</div>
+          <div class="hint" style="margin-top:0">Текущий пользователь:</div>
+          <div class="pill" style="margin-top:8px; max-width:100%">${email ? email : "—"}</div>
+          <div style="height:12px"></div>
+          <button id="sheetSignOut" class="btn danger" style="width:100%">Выйти</button>
+          <div class="hint" style="margin-top:10px">Конфиг Firestore/коллекции спрятаны в шапке на мобиле — чтобы не шуметь.</div>
+        `;
+        drawerBody.appendChild(box);
+        setTimeout(() => {
+          const b = document.getElementById("sheetSignOut");
+          b && b.addEventListener("click", () => btnSignOut?.click());
+        }, 0);
+      }
+    }
+
+    function closeDrawer(){
+      if(!drawerBack) return;
+      drawerBack.style.display = "none";
+      drawerBack.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("drawerOpen");
+
+      if(drawerMode === "folders") restoreFromDrawer(foldersPanel);
+      if(drawerMode === "filters") restoreFromDrawer(rightPanel);
+
+      drawerBody && (drawerBody.innerHTML = "");
+      drawerMode = null;
+      setActiveNav("clients");
+    }
+
+    function isMobile(){
+      return window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
+    }
+
+    function syncRangeChips(){
+      if(!rangeChips) return;
+      const active = state.filters.range || "all";
+      rangeChips.querySelectorAll("[data-range]").forEach(b => {
+        b.classList.toggle("selected", b.getAttribute("data-range") === active);
+      });
+    }
+
+    function renderFolderChips(){
+      if(!folderChips) return;
+      const { counts, none } = countByFolderId();
+      const selected = state.selectedFolder;
+
+      const top = folderOrder.filter(f => f.depth === 0).slice(0, 4); // 4 + (Все/Без) = 6 макс
+      const chips = [];
+
+      const mk = (key, label, count) => {
+        const sel = selected === key ? "selected" : "";
+        const countHtml = (count != null) ? `<span class="chipCount">${count}</span>` : "";
+        chips.push(`<button class="chip ${sel}" type="button" data-folderkey="${escapeHtml(key)}">${escapeHtml(label)} ${countHtml}</button>`);
+      };
+
+      mk("ALL", "Все", raw.length);
+      mk("NONE", "Без папки", none);
+
+      for(const f of top){
+        mk(f.id, f.name, counts.get(f.id) || 0);
+      }
+
+      chips.push(`<button class="chip" type="button" data-openfolders="1">Ещё</button>`);
+      folderChips.innerHTML = chips.join("");
+
+      folderChips.querySelectorAll("[data-folderkey]").forEach(el => {
+        el.addEventListener("click", () => {
+          const key = el.getAttribute("data-folderkey");
+          state.selectedFolder = key;
+          saveState();
+          renderFolders();
+          applyFiltersAndRender();
+        });
+      });
+      const moreBtn = folderChips.querySelector("[data-openfolders]");
+      moreBtn && moreBtn.addEventListener("click", () => openDrawer("folders"));
+    }
+
+    // Bind mobile controls
+    drawerClose && drawerClose.addEventListener("click", closeDrawer);
+    drawerBack && drawerBack.addEventListener("click", (e) => { if(e.target === drawerBack) closeDrawer(); });
+
+    navClients && navClients.addEventListener("click", () => { closeDrawer(); setActiveNav("clients"); });
+    navFolders && navFolders.addEventListener("click", () => { setActiveNav("folders"); openDrawer("folders"); });
+    navFilters && navFilters.addEventListener("click", () => { setActiveNav("filters"); openDrawer("filters"); });
+    navMore && navMore.addEventListener("click", () => { setActiveNav("more"); openDrawer("more"); });
+
+    openFiltersBtn && openFiltersBtn.addEventListener("click", () => openDrawer("filters"));
+
+    qMobile && qMobile.addEventListener("input", () => {
+      state.filters.q = (qMobile.value || "").trim();
+      qEl.value = state.filters.q;
+      saveState();
+      updateAccMeta();
+      updateFiltersHeaderMeta();
+      applyFiltersAndRender();
+    });
+
+    rangeChips && rangeChips.querySelectorAll("[data-range]").forEach(b => {
+      b.addEventListener("click", () => {
+        state.filters.range = b.getAttribute("data-range") || "all";
+        rangeEl.value = state.filters.range;
+        saveState();
+        updateAccMeta();
+        updateFiltersHeaderMeta();
+        syncRangeChips();
+        applyFiltersAndRender();
+      });
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if(e.key === "Escape" && drawerMode) closeDrawer();
+    });
+
 
     // --- Data state ---
     let unsubClients = null;
@@ -893,6 +1325,7 @@
 
       // update folder selects (client modal + bulk modal + folder parent select)
       rebuildFolderSelects();
+      renderFolderChips();
     }
 
     function rebuildFolderSelects(){
@@ -1038,7 +1471,9 @@
     // --- Filters state wiring ---
     function applyStateToInputs(){
       qEl.value = state.filters.q;
+      if(qMobile) qMobile.value = state.filters.q;
       rangeEl.value = state.filters.range;
+      syncRangeChips();
       sortFieldEl.value = state.filters.sortField;
 
       sortDirBtn.textContent = state.filters.sortDir === "asc" ? "⬆️ возр." : "⬇️ убыв.";
@@ -1050,7 +1485,9 @@
 
     function captureInputsToState(){
       state.filters.q = (qEl.value || "").trim();
+      if(qMobile) qMobile.value = state.filters.q;
       state.filters.range = rangeEl.value || "all";
+      syncRangeChips();
       state.filters.sortField = sortFieldEl.value || "date";
       saveState();
       updateAccMeta();
@@ -1276,11 +1713,15 @@
         card.draggable = true;
         card.dataset.dragId = id;
 
+        const initial = (clientName || "K").trim().slice(0,1).toUpperCase();
         card.innerHTML = `
           <div class="clientHead">
-            <div class="clientTitle">
-              <div class="main">${escapeHtml(clientName)}</div>
-              <div class="sub">${escapeHtml(fmt(dt))} • <span class="mono">${escapeHtml(shortLabelFromId(id))}</span></div>
+            <div style="display:flex; gap:10px; align-items:flex-start; min-width:0">
+              <div style="width:36px; height:36px; border-radius:14px; border:1px solid var(--line); background:rgba(255,255,255,.05); display:flex; align-items:center; justify-content:center; font-weight:900; flex:0 0 auto">${escapeHtml(initial)}</div>
+              <div class="clientTitle" style="min-width:0">
+                <div class="main" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis">${escapeHtml(clientName)}</div>
+                <div class="sub">${escapeHtml(fmt(dt))} • <span class="mono">${escapeHtml(shortLabelFromId(id))}</span></div>
+              </div>
             </div>
             <div style="display:flex; align-items:center; gap:10px;">
               <input class="chk" type="checkbox" data-sel="${escapeHtml(id)}" />
@@ -1419,9 +1860,29 @@
         const val = (typeof v === "object" && v?.seconds != null && v?.nanoseconds != null)
           ? fmt(toDateAny(v))
           : String(v);
-        item.innerHTML = `<div class="k">${escapeHtml(k)}</div><div class="v">${escapeHtml(val)}</div>`;
+        const isLong = String(val).length > 180;
+        item.innerHTML = `
+          <div class="k">${escapeHtml(k)}</div>
+          <div class="v ${isLong ? 'vClamp' : ''}">${escapeHtml(val)}</div>
+          ${isLong ? `<button class="btn ghost" type="button" data-more="1" style="padding:8px 10px; margin-top:8px; width:100%">Показать ещё</button>` : ``}
+        `;
         kv.appendChild(item);
       }
+
+      // Read more toggles in modal
+      kv.querySelectorAll('[data-more="1"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const v = btn.parentElement.querySelector('.v');
+          const expanded = !v.classList.contains('vClamp');
+          if(expanded){
+            v.classList.add('vClamp');
+            btn.textContent = 'Показать ещё';
+          } else {
+            v.classList.remove('vClamp');
+            btn.textContent = 'Свернуть';
+          }
+        });
+      });
 
       modalBack.style.display = "flex";
     }
@@ -1503,6 +1964,8 @@
 
     // --- Subscriptions ---
     onAuthStateChanged(auth, (user) => {
+      document.body.classList.toggle('authed', !!user);
+      if(!user){ closeDrawer(); }
       if(unsubClients){ unsubClients(); unsubClients = null; }
       if(unsubFolders){ unsubFolders(); unsubFolders = null; }
       raw = [];
@@ -1527,6 +1990,8 @@
       userPill.style.display = "block";
       btnSignOut.style.display = "inline-block";
       userPill.textContent = `Вошли: ${user.email || user.uid}`;
+      closeDrawer();
+      setActiveNav('clients');
 
       // Apply saved UI state
       applyStateToInputs();
