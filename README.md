@@ -3,7 +3,7 @@
 **Software Engineer** · **C# / WPF / .NET (Desktop)** · UI/UX · Cybersecurity (ethical)  
 📍 Kazakhstan | Usa
 
-🌐 Портфолио: http://abekenaibek.kz/  
+
 💬 Telegram: https://t.me/bibonuwu  
 📧 Email: aibekabeken47@gmail.com
 
