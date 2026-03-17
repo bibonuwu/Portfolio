@@ -7,19 +7,28 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     exit
 }
 
-$Host.UI.RawUI.WindowTitle = "BIBON TOOL v1.0"
+$Host.UI.RawUI.WindowTitle = "BIBON TOOL"
+$ws = $Host.UI.RawUI.WindowSize
+$ws.Width = 80
+$ws.Height = 40
+$Host.UI.RawUI.WindowSize = $ws
+$bf = $Host.UI.RawUI.BufferSize
+$bf.Width = 80
+$Host.UI.RawUI.BufferSize = $bf
+Clear-Host
 
 function Show-Banner {
     $banner = @"
-
-    ____  ________  ____  _   __   __  _____   ________ __
-   / __ )/  _/ __ )/ __ \/ | / /  / / / /   | / ____/ //_/
-  / __  |/ // __  / / / /  |/ /  / /_/ / /| |/ /   / ,<
- / /_/ // // /_/ / /_/ / /|  /  / __  / ___ / /___/ /| |
-/_____/___/_____/\____/_/ |_/  /_/ /_/_/  |_\____/_/ |_|
-
+                                                                                                                                                   
+       
+oooooooooo  ooooo oooooooooo    ooooooo   oooo   oooo 
+ 888    888  888   888    888 o888   888o  8888o  88  
+ 888oooo88   888   888oooo88  888     888  88 888o88  
+ 888    888  888   888    888 888o   o888  88   8888  
+o888ooo888  o888o o888ooo888    88ooo88   o88o    88  
+                                                                                                                                                                         
 "@
-    Write-Host $banner -ForegroundColor Magenta
+    Write-Host $banner -ForegroundColor DarkGreen
 }
 
 function Show-Menu {
@@ -29,37 +38,64 @@ function Show-Menu {
     Write-Host "              M E N U" -ForegroundColor Cyan
     Write-Host "  ========================================" -ForegroundColor DarkCyan
     Write-Host ""
+    Write-Host "  --- WINDOWS ---" -ForegroundColor DarkYellow
     Write-Host "   [" -NoNewline -ForegroundColor DarkGray
     Write-Host "1" -NoNewline -ForegroundColor Yellow
-    Write-Host "] Aktivaciya Windows" -ForegroundColor White
+    Write-Host "] " -NoNewline -ForegroundColor White
+    Write-Host "[*] " -NoNewline -ForegroundColor Green
+    Write-Host "Aktivaciya Windows" -ForegroundColor White
     Write-Host "   [" -NoNewline -ForegroundColor DarkGray
     Write-Host "2" -NoNewline -ForegroundColor Yellow
-    Write-Host "] Remove Windows AI" -ForegroundColor White
+    Write-Host "] " -NoNewline -ForegroundColor White
+    Write-Host "[-] " -NoNewline -ForegroundColor Red
+    Write-Host "Remove Windows AI" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  --- NETWORK ---" -ForegroundColor DarkYellow
     Write-Host "   [" -NoNewline -ForegroundColor DarkGray
     Write-Host "3" -NoNewline -ForegroundColor Yellow
-    Write-Host "] WiFi paroli" -ForegroundColor White
+    Write-Host "] " -NoNewline -ForegroundColor White
+    Write-Host "[~] " -NoNewline -ForegroundColor Cyan
+    Write-Host "WiFi paroli" -ForegroundColor White
     Write-Host "   [" -NoNewline -ForegroundColor DarkGray
     Write-Host "4" -NoNewline -ForegroundColor Yellow
-    Write-Host "] Blokirovka saytov (hosts)" -ForegroundColor White
+    Write-Host "] " -NoNewline -ForegroundColor White
+    Write-Host "[!] " -NoNewline -ForegroundColor Magenta
+    Write-Host "Blokirovka saytov (hosts)" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  --- SYSTEM ---" -ForegroundColor DarkYellow
     Write-Host "   [" -NoNewline -ForegroundColor DarkGray
     Write-Host "5" -NoNewline -ForegroundColor Yellow
-    Write-Host "] Classic context menu (Win10)" -ForegroundColor White
+    Write-Host "] " -NoNewline -ForegroundColor White
+    Write-Host "[<] " -NoNewline -ForegroundColor Blue
+    Write-Host "Classic context menu (Win10)" -ForegroundColor White
     Write-Host "   [" -NoNewline -ForegroundColor DarkGray
     Write-Host "6" -NoNewline -ForegroundColor Yellow
-    Write-Host "] New context menu (Win11)" -ForegroundColor White
+    Write-Host "] " -NoNewline -ForegroundColor White
+    Write-Host "[>] " -NoNewline -ForegroundColor Blue
+    Write-Host "New context menu (Win11)" -ForegroundColor White
     Write-Host "   [" -NoNewline -ForegroundColor DarkGray
     Write-Host "7" -NoNewline -ForegroundColor Yellow
-    Write-Host "] Restart explorer.exe" -ForegroundColor White
+    Write-Host "] " -NoNewline -ForegroundColor White
+    Write-Host "[#] " -NoNewline -ForegroundColor Yellow
+    Write-Host "Restart explorer.exe" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  --- OTHER ---" -ForegroundColor DarkYellow
     Write-Host "   [" -NoNewline -ForegroundColor DarkGray
     Write-Host "8" -NoNewline -ForegroundColor Yellow
-    Write-Host "] Install FirestoreRAT" -ForegroundColor White
+    Write-Host "] " -NoNewline -ForegroundColor White
+    Write-Host "[+] " -NoNewline -ForegroundColor Green
+    Write-Host "Install FirestoreRAT" -ForegroundColor White
     Write-Host "   [" -NoNewline -ForegroundColor DarkGray
     Write-Host "9" -NoNewline -ForegroundColor Yellow
-    Write-Host "] YouTube - @bibonuwu" -ForegroundColor White
+    Write-Host "] " -NoNewline -ForegroundColor White
+    Write-Host "[>] " -NoNewline -ForegroundColor Red
+    Write-Host "YouTube - @bibonuwu" -ForegroundColor White
     Write-Host ""
     Write-Host "   [" -NoNewline -ForegroundColor DarkGray
     Write-Host "0" -NoNewline -ForegroundColor Red
-    Write-Host "] Vyhod" -ForegroundColor DarkGray
+    Write-Host "] " -NoNewline -ForegroundColor White
+    Write-Host "[x] " -NoNewline -ForegroundColor DarkRed
+    Write-Host "Vyhod" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "  ========================================" -ForegroundColor DarkCyan
 }
