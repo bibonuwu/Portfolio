@@ -278,31 +278,7 @@
   position:fixed; left:0; right:0; bottom:0;
   z-index:40;
   display:none;
-  padding:10px 10px calc(10px + env(
-        <!-- Mobile quick controls (поиск/папки/период) -->
-        <div class="mobileQuick" id="mobileQuick">
-          <div class="quickRow">
-            <div class="field" style="flex:1">
-              <label class="srOnly" for="qMobile">Поиск</label>
-              <input id="qMobile" type="text" placeholder="Поиск… (Android, UID, iPhone…)" />
-            </div>
-            <button id="openFiltersBtn" class="iconBtn iconBtnLg" type="button" aria-label="Открыть фильтры">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M3 5h18M6 12h12M10 19h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </button>
-          </div>
-
-          <div id="folderChips" class="chips" aria-label="Папки (свайп)"></div>
-
-          <div id="rangeChips" class="chips" aria-label="Период">
-            <button class="chip" type="button" data-range="all">Все</button>
-            <button class="chip" type="button" data-range="24h">24ч</button>
-            <button class="chip" type="button" data-range="7d">7д</button>
-            <button class="chip" type="button" data-range="30d">30д</button>
-          </div>
-        </div>
-safe-area-inset-bottom));
+  padding:10px 10px calc(10px + env(safe-area-inset-bottom));
   background:rgba(17,26,51,.86);
   border-top:1px solid var(--line);
   backdrop-filter:blur(12px);
@@ -447,40 +423,36 @@ safe-area-inset-bottom));
       </div>
     </div>
 
+    <!-- Mobile quick controls (поиск/папки/период) -->
+    <div class="mobileQuick" id="mobileQuick">
+      <div class="quickRow">
+        <div class="field" style="flex:1">
+          <label class="srOnly" for="qMobile">Поиск</label>
+          <input id="qMobile" type="text" placeholder="Поиск… (Android, UID, iPhone…)" />
+        </div>
+        <button id="openFiltersBtn" class="iconBtn iconBtnLg" type="button" aria-label="Открыть фильтры">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M3 5h18M6 12h12M10 19h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="folderChips" class="chips" aria-label="Папки (свайп)"></div>
+
+      <div id="rangeChips" class="chips" aria-label="Период">
+        <button class="chip" type="button" data-range="all">Все</button>
+        <button class="chip" type="button" data-range="24h">24ч</button>
+        <button class="chip" type="button" data-range="7d">7д</button>
+        <button class="chip" type="button" data-range="30d">30д</button>
+      </div>
+    </div>
+
     <div class="layout">
       <!-- Left: folders -->
       <div id="foldersPanel" class="card" style="display:none">
         <div class="folderHeader">
           <div class="folderTitle">Папки</div>
-          <button id="createFolderBtn" class="btn" style="padding:8px 12px
-
-  <nav class="bottomNav" id="bottomNav" aria-label="Навигация">
-    <div class="navRow">
-  
-     
-      <button class="navBtn" id="navFilters" type="button" aria-label="Фильтры">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M3 5h18l-7 8v5l-4 2v-7L3 5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-        </svg>
-        <div class="l">Фильтры</div>
-      </button>
-     
-    </div>
-  </nav>
-
-  <div id="drawerBack" class="drawerBack" aria-hidden="true">
-    <div class="drawer" role="dialog" aria-modal="true" aria-label="Панель">
-      <div class="drawerTop">
-        <div class="drawerTitle" id="drawerTitle">—</div>
-        <button id="drawerClose" class="iconBtn iconBtnLg" type="button" aria-label="Закрыть">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-      <div id="drawerBody"></div>
-    </div>
-  </div>Создать</button>
+          <button id="createFolderBtn" class="btn" style="padding:8px 12px">Создать</button>
         </div>
         <div id="folderList" class="folder-list"></div>
         <div id="foldersEmpty" class="hint" style="display:none">Папок пока нет — создайте первую (можно делать вложенные).</div>
@@ -634,6 +606,33 @@ safe-area-inset-bottom));
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Mobile bottom navigation -->
+  <nav class="bottomNav" id="bottomNav" aria-label="Навигация">
+    <div class="navRow">
+      <button class="navBtn" id="navFilters" type="button" aria-label="Фильтры">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 5h18l-7 8v5l-4 2v-7L3 5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+        <div class="l">Фильтры</div>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Drawer / bottom sheet -->
+  <div id="drawerBack" class="drawerBack" aria-hidden="true">
+    <div class="drawer" role="dialog" aria-modal="true" aria-label="Панель">
+      <div class="drawerTop">
+        <div class="drawerTitle" id="drawerTitle">—</div>
+        <button id="drawerClose" class="iconBtn iconBtnLg" type="button" aria-label="Закрыть">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div id="drawerBody"></div>
     </div>
   </div>
 
