@@ -1989,6 +1989,12 @@
       userPill.style.display = "block";
       btnSignOut.style.display = "inline-block";
       userPill.textContent = `Вошли: ${user.email || user.uid}`;
+      console.log("=== DEBUG AUTH ===");
+      console.log("UID:", user.uid);
+      console.log("Email:", user.email);
+      console.log("Email Verified:", user.emailVerified);
+      console.log("Provider:", user.providerData?.[0]?.providerId);
+      console.log("=================");
       closeDrawer();
       setActiveNav('clients');
 
