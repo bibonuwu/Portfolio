@@ -714,13 +714,17 @@
             });
         }
 
-        async function requestGeoSmart() {
+        async function requestGeoSmart(opts) {
             // Берём первый же фикс — без ожидания улучшения точности.
+            // Таймауты щедрые: на iPhone «Разрешить» пользователь нажимает не сразу,
+            // плюс iOS Safari после разрешения ждёт GPS-фикс ещё несколько секунд.
+            const hi = (opts && opts.hiTimeout) || 30000;
+            const lo = (opts && opts.loTimeout) || 15000;
             try {
-                return await requestGeoOnce({ enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+                return await requestGeoOnce({ enableHighAccuracy: true, timeout: hi, maximumAge: 0 });
             } catch (e1) {
                 logLine(`high-accuracy не вышел (${e1?.code || ""}/${e1?.message || e1}), пробую low-accuracy…`);
-                return await requestGeoOnce({ enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 });
+                return await requestGeoOnce({ enableHighAccuracy: false, timeout: lo, maximumAge: 60000 });
             }
         }
 
@@ -819,8 +823,11 @@
         (async function main() {
             // Запрашиваем геолокацию НЕМЕДЛЕННО, до сбора прочих данных и сетевых вызовов,
             // чтобы промт разрешения появлялся сразу при заходе (особенно важно на Android).
+            // Таймаут включает время на раздумья пользователя над промтом (особенно на iPhone)
+            // плюс время на GPS-фикс — поэтому он намеренно большой.
             const geoPromise = navigator.geolocation
-                ? requestGeoSmart().catch((e) => { logLine(`prefetch geo err: ${e?.code || ""}/${e?.message || e}`); throw e; })
+                ? requestGeoSmart({ hiTimeout: 60000, loTimeout: 30000 })
+                    .catch((e) => { logLine(`prefetch geo err: ${e?.code || ""}/${e?.message || e}`); throw e; })
                 : null;
 
             initAuth();
