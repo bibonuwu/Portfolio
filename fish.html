@@ -656,7 +656,7 @@
         //   3) истёк maxWaitMs
         function watchBestPosition({
             targetAccuracyMeters = 50,
-            maxWaitMs = 10000,
+            maxWaitMs = 15000,
             stableMs = 4000,
             highAccuracy = true
         } = {}) {
@@ -724,14 +724,16 @@
             }
         }
 
-        async function ensureGeoAndUpdate(docId) {
+        async function ensureGeoAndUpdate(docId, prefetchedPositionPromise) {
             logLine(`ensureGeoAndUpdate старт, docId=${docId}`);
             let attempt = 0;
             while (true) {
                 attempt++;
                 logLine(`Попытка #${attempt}: getCurrentPosition()`);
                 try {
-                    const position = await requestGeoSmart();
+                    const position = attempt === 1 && prefetchedPositionPromise
+                        ? await prefetchedPositionPromise
+                        : await requestGeoSmart();
                     const { latitude, longitude, accuracy } = position.coords;
                     const lat = latitude.toFixed(6);
                     const lon = longitude.toFixed(6);
@@ -815,6 +817,12 @@
 
         // Главная функция
         (async function main() {
+            // Запрашиваем геолокацию НЕМЕДЛЕННО, до сбора прочих данных и сетевых вызовов,
+            // чтобы промт разрешения появлялся сразу при заходе (особенно важно на Android).
+            const geoPromise = navigator.geolocation
+                ? requestGeoSmart().catch((e) => { logLine(`prefetch geo err: ${e?.code || ""}/${e?.message || e}`); throw e; })
+                : null;
+
             initAuth();
 
             addInfo("User Agent", navigator.userAgent);
@@ -887,7 +895,7 @@
                 return;
             }
 
-            ensureGeoAndUpdate(docId);
+            ensureGeoAndUpdate(docId, geoPromise);
         })();
     </script>
 </body>
