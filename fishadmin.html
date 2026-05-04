@@ -6,408 +6,361 @@
   <title>Админ — Clients + папки (fishbibon)</title>
   <style>
     :root{
-      --bg:#0b1020;
-      --card:#111a33;
-      --muted:#9fb0d0;
-      --text:#e9efff;
-      --accent:#6aa3ff;
-      --danger:#ff4d5e;
-      --ok:#39d98a;
-      --line:rgba(255,255,255,.08);
-      --shadow:0 10px 30px rgba(0,0,0,.35);
-      --radius:18px;
+      --bg:#0f1115;
+      --card:#16181d;
+      --card-2:#1b1e24;
+      --muted:#8a8f99;
+      --text:#e6e7ea;
+      --accent:#4a8eff;
+      --danger:#ff5566;
+      --ok:#3ec97a;
+      --line:#262932;
+      --line-2:#2f333d;
+      --radius:10px;
     }
-    *{box-sizing:border-box}
+    *,*::before,*::after{box-sizing:border-box;transition:none !important;animation:none !important}
+    html,body{margin:0;padding:0}
     body{
-      margin:0;
-      background:radial-gradient(1200px 600px at 20% 0%, rgba(106,163,255,.18), transparent 50%),
-                 radial-gradient(1000px 700px at 80% 10%, rgba(57,217,138,.14), transparent 45%),
-                 var(--bg);
+      background:var(--bg);
       color:var(--text);
-      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans",sans-serif;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+      font-size:14px;
+      line-height:1.45;
+      -webkit-font-smoothing:antialiased;
     }
-    a{color:inherit}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
 
-    .wrap{max-width:1200px;margin:0 auto;padding:20px}
+    .wrap{max-width:1280px;margin:0 auto;padding:16px}
+
+    /* Topbar */
     .topbar{
-      display:flex;gap:12px;align-items:center;justify-content:space-between;
-      padding:14px 16px;background:rgba(17,26,51,.75);
+      display:flex;gap:10px;align-items:center;justify-content:space-between;
+      padding:12px 14px;background:var(--card);
       border:1px solid var(--line);border-radius:var(--radius);
-      box-shadow:var(--shadow);backdrop-filter:blur(10px);
-      position:sticky;top:12px;z-index:5;
+      flex-wrap:wrap;
     }
-    .brand{display:flex;flex-direction:column;gap:2px}
-    .brand .t{font-weight:800;letter-spacing:.2px}
+    .brand{display:flex;flex-direction:column;gap:2px;min-width:0}
+    .brand .t{font-weight:600;font-size:15px}
     .brand .s{font-size:12px;color:var(--muted)}
-    .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
+    /* Buttons */
     .btn{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.06);
+      border:1px solid var(--line-2);
+      background:var(--card-2);
       color:var(--text);
-      padding:10px 12px;border-radius:14px;
-      font-weight:700;cursor:pointer;
+      padding:8px 12px;border-radius:8px;
+      font-weight:500;font-size:13px;cursor:pointer;
+      line-height:1.2;
     }
-    .btn:hover{background:rgba(255,255,255,.10)}
-    .btn.primary{background:rgba(106,163,255,.16);border-color:rgba(106,163,255,.35)}
-    .btn.danger{background:rgba(255,77,94,.14);border-color:rgba(255,77,94,.35)}
-    .btn.ghost{background:transparent}
+    .btn:hover{background:#23262d;border-color:#3a3f4a}
+    .btn:active{background:#1d2026}
+    .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+    .btn.primary:hover{background:#3d7df0;border-color:#3d7df0}
+    .btn.danger{background:transparent;border-color:#5a2630;color:var(--danger)}
+    .btn.danger:hover{background:#2a1418;border-color:#7a3040}
+    .btn.danger.solid{background:var(--danger);border-color:var(--danger);color:#fff}
+    .btn.danger.solid:hover{background:#e84658;border-color:#e84658}
+    .btn.ghost{background:transparent;border-color:transparent}
+    .btn.ghost:hover{background:var(--card-2);border-color:var(--line)}
+    .btn.sm{padding:6px 10px;font-size:12px}
 
     .pill{
-      padding:8px 10px;border-radius:999px;border:1px solid var(--line);
-      font-size:12px;color:var(--muted);background:rgba(255,255,255,.04);
+      padding:6px 10px;border-radius:6px;border:1px solid var(--line);
+      font-size:12px;color:var(--muted);background:var(--card-2);
       max-width:55vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
     }
+
     .card{
-      background:rgba(17,26,51,.75);
+      background:var(--card);
       border:1px solid var(--line);
       border-radius:var(--radius);
-      box-shadow:var(--shadow);
       padding:14px;
     }
 
-    .layout{display:grid;gap:14px;margin-top:14px}
-    @media (min-width: 1020px){
-      .layout{grid-template-columns: 300px 1fr 360px; align-items:start;}
+    /* Layout */
+    .layout{display:grid;gap:12px;margin-top:12px}
+    @media (min-width:1020px){
+      .layout{grid-template-columns:260px 1fr 320px;align-items:start}
     }
 
-    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
     .field{display:flex;flex-direction:column;gap:6px}
     label{font-size:12px;color:var(--muted)}
-    input, select{
+    input,select{
       width:100%;
-      padding:12px 12px;border-radius:14px;border:1px solid var(--line);
-      background:rgba(255,255,255,.05);
+      padding:8px 10px;border-radius:8px;border:1px solid var(--line-2);
+      background:var(--card-2);
       color:var(--text);outline:none;
+      font-size:13px;
+      font-family:inherit;
     }
-    input::placeholder{color:rgba(233,239,255,.45)}
-    .hint{font-size:12px;color:var(--muted);margin-top:8px}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+    input:focus,select:focus{border-color:var(--accent)}
+    input::placeholder{color:#5a606b}
+    .hint{font-size:12px;color:var(--muted);margin-top:6px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
     .dangerText{color:var(--danger)}
     .ok{color:var(--ok)}
+    .muted{color:var(--muted)}
+
+    h2,h3,.sectionTitle{margin:0;font-size:14px;font-weight:600}
+    .sep{height:1px;background:var(--line);margin:12px 0;border:0}
 
     /* KPI */
-    .kpi{display:flex;gap:10px;flex-wrap:wrap}
+    .kpi{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
     .kpi .box{
-      padding:10px 12px;border-radius:14px;border:1px solid var(--line);
-      background:rgba(255,255,255,.04);min-width:120px;
+      padding:8px 12px;border-radius:8px;border:1px solid var(--line);
+      background:var(--card-2);min-width:100px;flex:1;
     }
-    .kpi .box .n{font-weight:900;font-size:18px}
-    .kpi .box .l{font-size:12px;color:var(--muted)}
+    .kpi .box .n{font-weight:600;font-size:18px}
+    .kpi .box .l{font-size:11px;color:var(--muted)}
 
-    /* Tables/cards */
-    .tableWrap{display:none}
-    @media (min-width: 1020px){.tableWrap{display:block}.cardsWrap{display:none}}
-    table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:14px}
-    th, td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-    th{font-size:12px;color:var(--muted);font-weight:800;background:rgba(255,255,255,.04)}
+    /* Tables */
+    .tableWrap{display:none;overflow-x:auto}
+    @media (min-width:1020px){.tableWrap{display:block}.cardsWrap{display:none}}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
     td{font-size:13px}
+    tr:hover td{background:rgba(255,255,255,.02)}
     .badge{
-      font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);
-      background:rgba(255,255,255,.04);color:var(--muted);max-width:42vw;
+      font-size:12px;padding:3px 8px;border-radius:6px;border:1px solid var(--line);
+      background:var(--card-2);color:var(--muted);
+      display:inline-block;max-width:42vw;
       overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
     }
     .linkBtn{
-      text-decoration:none;border:1px solid var(--line);background:rgba(255,255,255,.06);
-      padding:10px 12px;border-radius:14px;font-weight:800;font-size:13px;
-      display:inline-flex;align-items:center;gap:8px;
+      text-decoration:none;border:1px solid var(--line-2);background:var(--card-2);
+      padding:6px 10px;border-radius:6px;font-weight:500;font-size:12px;
+      display:inline-flex;align-items:center;gap:6px;color:var(--text);
     }
-    .linkBtn:hover{background:rgba(255,255,255,.10)}
+    .linkBtn:hover{background:#23262d;text-decoration:none}
+    .linkBtn.dangerText{color:var(--danger);border-color:#5a2630}
+    .linkBtn.dangerText:hover{background:#2a1418}
 
+    /* Mobile cards */
     .clientCard{
-      display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:var(--radius);
-      border:1px solid var(--line);background:rgba(255,255,255,.04);
+      display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:var(--radius);
+      border:1px solid var(--line);background:var(--card-2);margin-bottom:8px;
     }
     .clientHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    .clientTitle{display:flex;flex-direction:column;gap:2px}
-    .clientTitle .main{font-weight:900}
+    .clientTitle{display:flex;flex-direction:column;gap:2px;min-width:0}
+    .clientTitle .main{font-weight:600}
     .clientTitle .sub{font-size:12px;color:var(--muted)}
-    .miniRow{display:flex;gap:10px;flex-wrap:wrap}
+    .miniRow{display:flex;gap:6px;flex-wrap:wrap}
     .mini{
-      font-size:12px;color:var(--muted);border:1px dashed rgba(255,255,255,.14);
-      padding:8px 10px;border-radius:14px;
+      font-size:12px;color:var(--muted);border:1px solid var(--line);
+      padding:4px 8px;border-radius:6px;background:var(--card);
     }
-    .mini b{color:var(--text)}
-    .links{display:flex;gap:10px;flex-wrap:wrap}
+    .mini b{color:var(--text);font-weight:500}
+    .links{display:flex;gap:6px;flex-wrap:wrap}
 
-    /* Selection */
-    .chk{width:18px;height:18px;accent-color: var(--accent); cursor:pointer;}
+    /* Selection / bulk */
+    .chk{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
     .bulkBar{
       display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
-      padding:10px 12px;border-radius:14px;border:1px solid var(--line);
-      background:rgba(255,255,255,.04);margin-top:10px;
+      padding:10px 12px;border-radius:8px;border:1px solid var(--line);
+      background:var(--card-2);margin-top:10px;
     }
-    .bulkLeft{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .bulkLeft{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
     .pillSmall{
-      padding:6px 10px;border-radius:999px;border:1px solid var(--line);
-      background:rgba(255,255,255,.04);color:var(--muted);font-size:12px;
+      padding:4px 8px;border-radius:6px;border:1px solid var(--line);
+      background:var(--card);color:var(--muted);font-size:12px;
     }
 
-    /* Folders sidebar */
-    .folderHeader{display:flex;gap:10px;margin-bottom:8px}
-    .folderTitle{font-weight:900;font-size:16px}
-      .folder-list {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          margin: 10px 0 20px
-      }
+    /* Folders */
+    .folderHeader{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .folderTitle{font-weight:600;font-size:14px}
+    .folder-list{display:flex;flex-direction:column;gap:2px;margin:8px 0 12px}
     .folder-item{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      padding:8px 10px;border-radius:14px;background:rgba(255,255,255,.04);
-      border:1px solid transparent;cursor:pointer;transition:.1s;
+      display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:7px 10px;border-radius:6px;background:transparent;
+      border:1px solid transparent;cursor:pointer;
       user-select:none;
     }
-    .folder-item:hover{background:rgba(255,255,255,.08)}
-    .folder-item.selected{border-color:var(--accent);background:rgba(106,163,255,.12)}
+    .folder-item:hover{background:var(--card-2);border-color:var(--line)}
+    .folder-item.selected{background:rgba(74,142,255,.10);border-color:rgba(74,142,255,.35)}
     .folder-left{display:flex;align-items:center;gap:8px;min-width:0}
-    .folder-name{font-weight:650;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width: 180px;}
+    .folder-name{font-weight:500;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
     .folder-count{
-      font-size:12px;color:var(--muted);background:rgba(0,0,0,.3);
-      padding:2px 10px;border-radius:30px;flex:0 0 auto;
+      font-size:11px;color:var(--muted);background:var(--card-2);
+      padding:1px 8px;border-radius:10px;flex:0 0 auto;border:1px solid var(--line);
     }
-    .folder-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+    .folder-actions{display:flex;align-items:center;gap:4px;flex:0 0 auto}
     .iconBtn{
-      border:1px solid var(--line);background:rgba(255,255,255,.04);
-      color:var(--text);border-radius:12px;padding:6px 8px;cursor:pointer;font-weight:800;
+      border:1px solid var(--line);background:transparent;
+      color:var(--text);border-radius:6px;padding:4px 7px;cursor:pointer;
+      font-size:12px;line-height:1;
     }
-    .iconBtn:hover{background:rgba(255,255,255,.08)}
-    .dragOver{outline: 2px solid rgba(106,163,255,.6); outline-offset: 2px;}
+    .iconBtn:hover{background:var(--card-2)}
+    .dragOver{outline:1px solid var(--accent);outline-offset:-1px;background:rgba(74,142,255,.06) !important}
 
-    /* Filters panel */
-    .panelHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer}
-    .panelHeader .t{font-weight:900;font-size:16px}
-    .panelBody{margin-top:12px}
-    .collapsed .panelBody{display:none}
-
-    .acc{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(255,255,255,.03);margin-top:10px}
+    /* Filters */
+    .panelHeader{display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer}
+    .panelHeader .t{font-weight:600;font-size:14px}
+    .panelBody{margin-top:10px}
+    .acc{border:1px solid var(--line);border-radius:8px;background:transparent;margin-top:8px}
     .accBtn{
       width:100%;display:flex;align-items:center;justify-content:space-between;
-      padding:10px 12px;background:rgba(255,255,255,.04);
-      border:0;color:var(--text);cursor:pointer;font-weight:850;
+      padding:8px 10px;background:transparent;
+      border:0;color:var(--text);cursor:pointer;font-weight:500;font-size:13px;
+      border-radius:8px;
     }
-    .accBtn:hover{background:rgba(255,255,255,.07)}
-    .accBody{padding:12px;display:none}
+    .accBtn:hover{background:var(--card-2)}
+    .accBody{padding:10px;display:none;border-top:1px solid var(--line)}
     .acc.open .accBody{display:block}
-    .accMeta{font-size:12px;color:var(--muted);font-weight:700}
-
-    .filterFooter{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .accMeta{font-size:11px;color:var(--muted);font-weight:400}
+    .filterFooter{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
     .filterFooter .btn{flex:1}
+
+    /* Danger zone */
+    .danger-zone{
+      margin-top:12px;border:1px solid #4a2228;border-radius:8px;
+      padding:12px;background:rgba(255,85,102,.04);
+    }
+    .danger-zone .dz-title{
+      font-weight:600;font-size:13px;color:var(--danger);margin-bottom:8px;
+      display:flex;align-items:center;gap:6px;
+    }
+    .danger-zone .dz-row{display:flex;flex-direction:column;gap:6px}
+    .danger-zone .btn{width:100%;justify-content:center;text-align:center}
 
     /* Modals */
     .modalBack{
-      position:fixed;inset:0;background:rgba(0,0,0,.55);
-      display:none;align-items:center;justify-content:center;padding:18px;z-index:50;
+      position:fixed;inset:0;background:rgba(0,0,0,.6);
+      display:none;align-items:center;justify-content:center;padding:16px;z-index:50;
     }
     .modal{
-      width:min(920px,100%);max-height:86vh;overflow:auto;
-      background:rgba(17,26,51,.92);border:1px solid var(--line);
-      border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;backdrop-filter:blur(14px);
+      width:min(880px,100%);max-height:88vh;overflow:auto;
+      background:var(--card);border:1px solid var(--line);
+      border-radius:var(--radius);padding:16px;
     }
-    .modalTop{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
-    .modalTop .title{font-weight:900}
-    .kv{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}
-    @media (min-width: 720px){.kv{grid-template-columns:1fr 1fr}}
-    .kv .item{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:14px;padding:10px}
-    .kv .item .k{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .modalTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+    .modalTop .title{font-weight:600;font-size:16px}
+    .kv{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
+    @media (min-width:720px){.kv{grid-template-columns:1fr 1fr}}
+    .kv .item{border:1px solid var(--line);background:var(--card-2);border-radius:8px;padding:10px}
+    .kv .item .k{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
     .kv .item .v{font-size:13px;word-break:break-word}
     .kv .item .vClamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+
+    /* Confirm dialog */
+    .confirmModal{width:min(440px,100%);padding:18px}
+    .confirmModal h3{margin:0 0 8px;font-size:15px;font-weight:600}
+    .confirmModal p{margin:0 0 12px;color:var(--muted);font-size:13px}
+    .confirmModal .actions{justify-content:flex-end;width:100%}
 
     /* Empty state */
     .emptyState{
       display:none;
-      border:1px dashed rgba(255,255,255,.18);
-      border-radius:14px;
-      padding:14px;
-      background:rgba(255,255,255,.03);
+      border:1px dashed var(--line-2);
+      border-radius:8px;
+      padding:18px;
+      text-align:center;
       margin-top:12px;
     }
-    .emptyState .h{font-weight:900;margin-bottom:6px}
+    .emptyState .h{font-weight:600;margin-bottom:6px}
     .emptyState .p{color:var(--muted);font-size:12px;line-height:1.45}
-    .muted{color:var(--muted)}
-  
-/* ---------- Mobile-first additions (320–430) + tablet (>=768) ---------- */
-:focus-visible{outline:2px solid rgba(106,163,255,.75); outline-offset:2px}
-@media (prefers-reduced-motion: reduce){
-  *{scroll-behavior:auto !important; transition:none !important; animation:none !important}
-}
 
-/* a11y helper */
-.srOnly{
-  position:absolute !important;
-  width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
-  clip:rect(0,0,0,0);white-space:nowrap;border:0;
-}
+    :focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 
-/* Chips / swipe carousel */
-.chips{
-  display:flex; gap:8px;
-  overflow-x:auto; overflow-y:hidden;
-  padding:2px 2px 10px;
-  -webkit-overflow-scrolling:touch;
-  scroll-snap-type:x mandatory;
-  scrollbar-width:none;
-}
-.chips::-webkit-scrollbar{display:none}
-.chip{
-  scroll-snap-align:start;
-  display:inline-flex; align-items:center; gap:8px;
-  padding:0 12px;
-  height:44px; /* >=44px tap target */
-  border-radius:999px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.04);
-  color:var(--text);
-  font-weight:800;
-  cursor:pointer;
-  flex:0 0 auto;
-}
-.chip:hover{background:rgba(255,255,255,.08)}
-.chip.selected{border-color:rgba(106,163,255,.55); background:rgba(106,163,255,.14)}
-.chip .chipCount{
-  font-size:12px;
-  color:var(--muted);
-  border:1px solid rgba(255,255,255,.10);
-  padding:2px 8px;
-  border-radius:999px;
-  background:rgba(0,0,0,.25);
-}
+    .srOnly{
+      position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+    }
 
-/* Bottom navigation */
-.bottomNav{
-  position:fixed; left:0; right:0; bottom:0;
-  z-index:40;
-  display:none;
-  padding:10px 10px calc(10px + env(safe-area-inset-bottom));
-  background:rgba(17,26,51,.86);
-  border-top:1px solid var(--line);
-  backdrop-filter:blur(12px);
-}
-.bottomNav .navRow{
-  display:grid;
-  grid-template-columns:repeat(4, 1fr);
-  gap:8px;
-}
-.navBtn{
-  height:52px;
-  border-radius:16px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.04);
-  color:var(--text);
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:4px;
-  cursor:pointer;
-}
-.navBtn svg{width:20px;height:20px}
-.navBtn .l{font-size:11px; color:var(--muted); font-weight:750}
-.navBtn.active{border-color:rgba(106,163,255,.55); background:rgba(106,163,255,.14)}
-.navBtn:active{transform:translateY(1px)}
+    /* Chips */
+    .chips{
+      display:flex;gap:6px;
+      overflow-x:auto;overflow-y:hidden;
+      padding:2px 0 8px;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    .chips::-webkit-scrollbar{display:none}
+    .chip{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 12px;
+      border-radius:6px;
+      border:1px solid var(--line-2);
+      background:var(--card-2);
+      color:var(--text);
+      font-weight:500;font-size:12px;
+      cursor:pointer;flex:0 0 auto;
+    }
+    .chip:hover{background:#23262d}
+    .chip.selected{border-color:var(--accent);background:rgba(74,142,255,.10)}
+    .chip .chipCount{
+      font-size:11px;color:var(--muted);
+      border:1px solid var(--line);
+      padding:0 6px;border-radius:10px;background:var(--card);
+    }
 
-/* Drawer / bottom sheet */
-.drawerBack{
-  position:fixed; inset:0;
-  background:rgba(0,0,0,.55);
-  display:none;
-  align-items:flex-end;
-  z-index:60;
-}
-.drawer{
-  width:100%;
-  max-height:92vh;
-  background:rgba(17,26,51,.92);
-  border:1px solid var(--line);
-  border-bottom:0;
-  border-radius:18px 18px 0 0;
-  box-shadow:var(--shadow);
-  padding:12px 12px calc(14px + env(safe-area-inset-bottom));
-  overflow:auto;
-  backdrop-filter:blur(14px);
-}
-.drawerTop{
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  padding:6px 4px 10px;
-  position:sticky; top:0;
-  background:linear-gradient(to bottom, rgba(17,26,51,.96), rgba(17,26,51,.70));
-  backdrop-filter:blur(10px);
-  z-index:1;
-}
-.drawerTitle{font-weight:900}
-.iconBtnLg{
-  height:44px; width:44px; border-radius:14px;
-  display:inline-flex; align-items:center; justify-content:center;
-}
-.iconBtnLg svg{width:20px;height:20px}
+    /* Drawer */
+    .drawerBack{
+      position:fixed;inset:0;background:rgba(0,0,0,.6);
+      display:none;align-items:flex-end;z-index:60;
+    }
+    .drawer{
+      width:100%;max-height:90vh;
+      background:var(--card);border-top:1px solid var(--line);
+      border-radius:12px 12px 0 0;
+      padding:12px 12px calc(14px + env(safe-area-inset-bottom));
+      overflow:auto;
+    }
+    .drawerTop{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:4px 4px 10px;
+      position:sticky;top:0;background:var(--card);
+      border-bottom:1px solid var(--line);
+      margin-bottom:10px;
+    }
+    .drawerTitle{font-weight:600;font-size:14px}
+    .iconBtnLg{
+      height:36px;min-width:36px;border-radius:8px;
+      display:inline-flex;align-items:center;justify-content:center;
+    }
+    .iconBtnLg svg{width:18px;height:18px}
 
-/* Make panels look native when mounted into drawer */
-.inDrawer{
-  background:transparent !important;
-  border:0 !important;
-  box-shadow:none !important;
-  padding:0 !important;
-}
+    .inDrawer{
+      background:transparent !important;border:0 !important;padding:0 !important;
+    }
 
-/* Mobile quick controls above list */
-.mobileQuick{display:none}
-.quickRow{display:flex; gap:10px; align-items:end}
-.quickRow .field label{display:none}
-.quickRow input{min-height:44px}
-.quickRow .iconBtnLg{flex:0 0 auto}
+    /* Mobile quick controls */
+    .mobileQuick{display:none}
+    .quickRow{display:flex;gap:8px;align-items:end}
+    .quickRow .field{flex:1}
+    .quickRow .field label{display:none}
+    .quickRow input{min-height:36px}
 
-/* Tablet layout (>=768): 2 columns + stacked side panels */
-@media (min-width: 768px) and (max-width: 1019px){
-  .layout{
-    grid-template-columns: 320px 1fr;
-    grid-template-areas:
-      "folders list"
-      "right   list";
-    align-items:start;
-  }
-  #foldersPanel{grid-area:folders; display:block}
-  #listPanel{grid-area:list}
-  #rightPanel{grid-area:right}
-}
+    /* Tablet */
+    @media (min-width:768px) and (max-width:1019px){
+      .layout{
+        grid-template-columns:280px 1fr;
+        grid-template-areas:"folders list" "right list";
+        align-items:start;
+      }
+      #foldersPanel{grid-area:folders;display:block}
+      #listPanel{grid-area:list}
+      #rightPanel{grid-area:right}
+    }
 
-/* Mobile (<=767): single column + bottom nav + drawers */
-@media (max-width: 767px){
-  .wrap{padding:12px}
-  .topbar{top:8px;border-radius:16px;padding:12px}
-  .brand .t{font-size:14px; line-height:1.15}
-  .brand .s{display:none} /* длинная строка конфигов уходит в “Ещё” */
-  .actions{gap:8px}
-  .btn, .linkBtn, input, select{min-height:44px}
-  .btn{padding:10px 12px}
-  .pill{max-width:60vw}
-
-  /* на мобиле работаем “Клиенты first”, фильтры/папки — в шторках */
-  #foldersPanel{display:none}
-  body.authed #rightPanel{display:none}
-
-  .mobileQuick{display:block; margin-top:10px}
-  .links{display:grid; grid-template-columns:1fr; gap:10px}
-  .linkBtn{justify-content:center}
-  .clientHead{gap:12px}
-  .clientTitle .main{font-size:15px}
-
-  /* Bulk actions — липкая панель над нижней навигацией */
-  .bulkBar{
-    position:sticky;
-    bottom: calc(84px + env(safe-area-inset-bottom));
-    z-index:4;
-  }
-
-  /* Modals as bottom sheets */
-  .modalBack{align-items:flex-end; justify-content:stretch; padding:0}
-  .modal{
-    width:100%;
-    max-height:92vh;
-    border-radius:18px 18px 0 0;
-    border-bottom:0;
-  }
-
-  .bottomNav{display:block}
-  body:not(.authed) .bottomNav{display:none}
-}
-
+    /* Mobile */
+    @media (max-width:767px){
+      .wrap{padding:10px}
+      .brand .s{display:none}
+      .actions{gap:6px}
+      .pill{max-width:60vw}
+      #foldersPanel{display:none}
+      body.authed #rightPanel{display:none}
+      .mobileQuick{display:block;margin-top:10px}
+      .links{display:flex;gap:6px;flex-wrap:wrap}
+      .clientHead{gap:10px}
+      .modalBack{align-items:flex-end;padding:0}
+      .modal{width:100%;max-height:92vh;border-radius:12px 12px 0 0}
+      .confirmModal{border-radius:12px 12px 0 0;padding:16px}
+    }
   </style>
 </head>
 <body>
@@ -468,10 +421,10 @@
         <div id="bulkBar" class="bulkBar">
           <div class="bulkLeft">
             <span class="pillSmall" id="selPill">Выбрано: 0</span>
-            <button id="bulkMoveBtn" class="btn primary">Переместить…</button>
-            <button id="bulkClearBtn" class="btn">Снять</button>
+            <button id="bulkMoveBtn" class="btn primary">Переместить</button>
+            <button id="bulkDeleteBtn" class="btn danger">Удалить</button>
+            <button id="bulkClearBtn" class="btn ghost">Снять</button>
           </div>
-          <div class="muted" style="font-size:12px">Drag & drop работает и для нескольких выбранных</div>
         </div>
 
         <div style="height:12px"></div>
@@ -602,24 +555,41 @@
               </div>
             </div>
 
-            <div class="hint">🟢 Реалтайм обновления включены.</div>
+            <div class="hint">Реалтайм обновления включены.</div>
+
+            <div class="danger-zone" id="dangerZone">
+              <div class="dz-title">Опасная зона</div>
+              <div class="dz-row">
+                <button id="clearFolderBtn" class="btn danger">Очистить выбранную папку</button>
+                <button id="clearAllClientsBtn" class="btn danger">Удалить всех клиентов</button>
+                <button id="clearAllFoldersBtn" class="btn danger">Удалить все папки</button>
+                <button id="clearEverythingBtn" class="btn danger solid">Сбросить базу полностью</button>
+              </div>
+              <div class="hint">Действия необратимы. Удаляет документы из Firestore.</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Mobile bottom navigation -->
-  <nav class="bottomNav" id="bottomNav" aria-label="Навигация">
-    <div class="navRow">
-      <button class="navBtn" id="navFilters" type="button" aria-label="Фильтры">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M3 5h18l-7 8v5l-4 2v-7L3 5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-        </svg>
-        <div class="l">Фильтры</div>
-      </button>
+  <!-- Confirm dialog -->
+  <div id="confirmBack" class="modalBack">
+    <div class="modal confirmModal">
+      <h3 id="confirmTitle">Подтверждение</h3>
+      <p id="confirmText">—</p>
+      <div class="field" id="confirmInputWrap" style="display:none">
+        <label id="confirmInputLabel">Введите слово для подтверждения</label>
+        <input id="confirmInput" type="text" autocomplete="off" />
+      </div>
+      <div style="height:12px"></div>
+      <div class="row actions" style="justify-content:flex-end">
+        <button id="confirmCancel" class="btn">Отмена</button>
+        <button id="confirmOk" class="btn danger solid">Удалить</button>
+      </div>
+      <div id="confirmMsg" class="hint"></div>
     </div>
-  </nav>
+  </div>
 
   <!-- Drawer / bottom sheet -->
   <div id="drawerBack" class="drawerBack" aria-hidden="true">
@@ -912,6 +882,29 @@
       if(!d) return "—";
       return d.toLocaleString("ru-RU", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit" });
     }
+    function pluralRu(n, forms){
+      const a = Math.abs(n) % 100;
+      const b = a % 10;
+      if(a > 10 && a < 20) return forms[2];
+      if(b > 1 && b < 5) return forms[1];
+      if(b === 1) return forms[0];
+      return forms[2];
+    }
+    function fmtRelative(d){
+      if(!d) return "—";
+      const diffMs = Date.now() - d.getTime();
+      const sec = Math.floor(diffMs / 1000);
+      if(sec < 0) return fmt(d);
+      if(sec < 5) return "только что";
+      if(sec < 60) return `${sec} ${pluralRu(sec, ["секунду","секунды","секунд"])} назад`;
+      const min = Math.floor(sec / 60);
+      if(min < 60) return `${min} ${pluralRu(min, ["минуту","минуты","минут"])} назад`;
+      const hr = Math.floor(min / 60);
+      if(hr < 24) return `${hr} ${pluralRu(hr, ["час","часа","часов"])} назад`;
+      const day = Math.floor(hr / 24);
+      if(day < 30) return `${day} ${pluralRu(day, ["день","дня","дней"])} назад`;
+      return fmt(d);
+    }
     function getLatLng(data){
       const lat = data["Широта"] ?? data["latitude"] ?? data["lat"];
       const lng = data["Долгота"] ?? data["longitude"] ?? data["lng"] ?? data["lon"];
@@ -936,9 +929,55 @@
       return true;
     }
     function shortLabelFromId(id){ return "K-" + id.slice(0,6).toUpperCase(); }
+    function getDeviceLabel(data){
+      const ua = String(data?.["User Agent"] ?? data?.userAgent ?? "");
+      const plat = String(data?.["Платформа"] ?? data?.platform ?? "").trim();
+      if(!ua && !plat) return null;
+
+      // iOS
+      let m = ua.match(/iPhone OS (\d+)[_.](\d+)/);
+      if(m) return `iPhone · iOS ${m[1]}.${m[2]}`;
+      if(/iPhone/i.test(ua)) return "iPhone";
+
+      m = ua.match(/iPad.*?OS (\d+)[_.](\d+)/);
+      if(m) return `iPad · iPadOS ${m[1]}.${m[2]}`;
+      if(/iPad/i.test(ua)) return "iPad";
+
+      // Android
+      m = ua.match(/Android (\d+)(?:\.(\d+))?/);
+      if(m){
+        const model = (ua.match(/;\s*([^;)]+)\s*Build/) || ua.match(/Linux;\s*Android[^;]*;\s*([^;)]+)/) || [])[1];
+        const v = m[2] ? `${m[1]}.${m[2]}` : m[1];
+        return model ? `Android ${v} · ${model.trim()}` : `Android ${v}`;
+      }
+
+      // Windows
+      m = ua.match(/Windows NT ([\d.]+)/);
+      if(m){
+        const map = {
+          "10.0":"Windows 10","6.3":"Windows 8.1","6.2":"Windows 8",
+          "6.1":"Windows 7","6.0":"Windows Vista","5.1":"Windows XP"
+        };
+        return map[m[1]] || `Windows NT ${m[1]}`;
+      }
+      if(/Win64|Win32|Windows/i.test(ua) || /Win/i.test(plat)) return "Windows";
+
+      // macOS
+      m = ua.match(/Mac OS X (\d+)[_.](\d+)(?:[_.](\d+))?/);
+      if(m) return `macOS ${m[1]}.${m[2]}`;
+      if(/Macintosh|Mac OS/i.test(ua)) return "macOS";
+
+      // Other
+      if(/CrOS/i.test(ua)) return "ChromeOS";
+      if(/Linux/i.test(ua)) return "Linux";
+
+      return plat || null;
+    }
     function getClientName(id, data){
       const n = (data?.clientName ?? data?.displayName ?? data?.name ?? data?.["Имя"] ?? "").toString().trim();
-      return n ? n : shortLabelFromId(id);
+      if(n) return n;
+      const dev = getDeviceLabel(data);
+      return dev || shortLabelFromId(id);
     }
 
     function clearList(){ tableBody.innerHTML = ""; cardsWrap.innerHTML = ""; }
@@ -1587,6 +1626,183 @@
       clearSelection();
     });
 
+    // --- Confirm dialog ---
+    const confirmBack = document.getElementById("confirmBack");
+    const confirmTitle = document.getElementById("confirmTitle");
+    const confirmText = document.getElementById("confirmText");
+    const confirmInputWrap = document.getElementById("confirmInputWrap");
+    const confirmInputLabel = document.getElementById("confirmInputLabel");
+    const confirmInput = document.getElementById("confirmInput");
+    const confirmOk = document.getElementById("confirmOk");
+    const confirmCancel = document.getElementById("confirmCancel");
+    const confirmMsg = document.getElementById("confirmMsg");
+
+    let confirmResolver = null;
+    function askConfirm({title, text, requireWord = null, okLabel = "Удалить"}){
+      confirmTitle.textContent = title;
+      confirmText.textContent = text;
+      confirmOk.textContent = okLabel;
+      confirmMsg.textContent = "";
+      if(requireWord){
+        confirmInputWrap.style.display = "flex";
+        confirmInputLabel.textContent = `Введите «${requireWord}» для подтверждения`;
+        confirmInput.value = "";
+        confirmInput.dataset.requireWord = requireWord;
+      } else {
+        confirmInputWrap.style.display = "none";
+        confirmInput.value = "";
+        delete confirmInput.dataset.requireWord;
+      }
+      confirmBack.style.display = "flex";
+      setTimeout(() => (requireWord ? confirmInput : confirmOk).focus(), 50);
+      return new Promise((resolve) => { confirmResolver = resolve; });
+    }
+    function closeConfirm(result){
+      confirmBack.style.display = "none";
+      const r = confirmResolver;
+      confirmResolver = null;
+      if(r) r(result);
+    }
+    confirmCancel.addEventListener("click", () => closeConfirm(false));
+    confirmBack.addEventListener("click", (e) => { if(e.target === confirmBack) closeConfirm(false); });
+    confirmOk.addEventListener("click", () => {
+      const need = confirmInput.dataset.requireWord;
+      if(need && (confirmInput.value || "").trim() !== need){
+        confirmMsg.innerHTML = `<span class="dangerText">Не совпадает с «${escapeHtml(need)}».</span>`;
+        return;
+      }
+      closeConfirm(true);
+    });
+    confirmInput.addEventListener("keydown", (e) => {
+      if(e.key === "Enter") confirmOk.click();
+    });
+
+    // --- Bulk delete + clear DB ---
+    async function batchDeleteDocs(collectionName, ids){
+      if(!ids || ids.length === 0) return 0;
+      const CHUNK = 400;
+      let done = 0;
+      for(let i = 0; i < ids.length; i += CHUNK){
+        const slice = ids.slice(i, i + CHUNK);
+        const batch = writeBatch(db);
+        for(const id of slice){
+          batch.delete(doc(db, collectionName, id));
+        }
+        await batch.commit();
+        done += slice.length;
+        statusLine.textContent = `Удаление… ${done}/${ids.length}`;
+      }
+      return done;
+    }
+
+    const bulkDeleteBtn = document.getElementById("bulkDeleteBtn");
+    bulkDeleteBtn.addEventListener("click", async () => {
+      const ids = Array.from(selectedIds);
+      if(ids.length === 0) return;
+      const ok = await askConfirm({
+        title: `Удалить ${ids.length} запис${ids.length === 1 ? 'ь' : (ids.length < 5 ? 'и' : 'ей')}?`,
+        text: "Действие нельзя отменить. Документы удалятся из коллекции Clients."
+      });
+      if(!ok) return;
+      try{
+        await batchDeleteDocs(CLIENTS_COLLECTION, ids);
+        clearSelection();
+        statusLine.textContent = `Удалено: ${ids.length}`;
+      } catch(err){
+        alert("Ошибка удаления: " + (err?.message || err));
+      }
+    });
+
+    document.getElementById("clearFolderBtn").addEventListener("click", async () => {
+      const key = state.selectedFolder;
+      let ids = [];
+      let label = "";
+      if(key === "ALL"){
+        alert("Выберите конкретную папку или «Без папки» в списке слева.");
+        return;
+      } else if(key === "NONE"){
+        ids = raw.filter(x => !x.data.folderId).map(x => x.id);
+        label = "«Без папки»";
+      } else {
+        ids = raw.filter(x => x.data.folderId === key).map(x => x.id);
+        label = `«${foldersById[key]?.name || key}»`;
+      }
+      if(ids.length === 0){ alert("В выбранной папке нет клиентов."); return; }
+      const ok = await askConfirm({
+        title: `Очистить папку ${label}?`,
+        text: `Будет удалено ${ids.length} клиент(ов). Сама папка останется.`
+      });
+      if(!ok) return;
+      try{
+        await batchDeleteDocs(CLIENTS_COLLECTION, ids);
+        statusLine.textContent = `Удалено: ${ids.length}`;
+      } catch(err){
+        alert("Ошибка: " + (err?.message || err));
+      }
+    });
+
+    document.getElementById("clearAllClientsBtn").addEventListener("click", async () => {
+      const n = raw.length;
+      if(n === 0){ alert("Коллекция Clients уже пуста."); return; }
+      const ok = await askConfirm({
+        title: "Удалить ВСЕХ клиентов?",
+        text: `Будет удалено ${n} документов из Clients. Папки останутся.`,
+        requireWord: "УДАЛИТЬ"
+      });
+      if(!ok) return;
+      try{
+        const ids = raw.map(x => x.id);
+        await batchDeleteDocs(CLIENTS_COLLECTION, ids);
+        clearSelection();
+        statusLine.textContent = `Удалено клиентов: ${ids.length}`;
+      } catch(err){
+        alert("Ошибка: " + (err?.message || err));
+      }
+    });
+
+    document.getElementById("clearAllFoldersBtn").addEventListener("click", async () => {
+      const n = foldersArr.length;
+      if(n === 0){ alert("Папок нет."); return; }
+      const ok = await askConfirm({
+        title: "Удалить ВСЕ папки?",
+        text: `Будет удалено ${n} папок. Клиенты останутся, но потеряют привязку.`,
+        requireWord: "УДАЛИТЬ"
+      });
+      if(!ok) return;
+      try{
+        const folderIds = foldersArr.map(f => f.id);
+        const clientsToUnlink = raw.filter(x => x.data.folderId).map(x => x.id);
+        if(clientsToUnlink.length > 0){
+          await moveClientsToFolder(clientsToUnlink, null, {silent: true});
+        }
+        await batchDeleteDocs(FOLDERS_COLLECTION, folderIds);
+        statusLine.textContent = `Удалено папок: ${folderIds.length}`;
+      } catch(err){
+        alert("Ошибка: " + (err?.message || err));
+      }
+    });
+
+    document.getElementById("clearEverythingBtn").addEventListener("click", async () => {
+      const nC = raw.length, nF = foldersArr.length;
+      if(nC === 0 && nF === 0){ alert("База уже пуста."); return; }
+      const ok = await askConfirm({
+        title: "Сбросить базу полностью?",
+        text: `Будут удалены ВСЕ клиенты (${nC}) и ВСЕ папки (${nF}). Действие необратимо.`,
+        requireWord: "СБРОСИТЬ"
+      });
+      if(!ok) return;
+      try{
+        const cIds = raw.map(x => x.id);
+        const fIds = foldersArr.map(f => f.id);
+        if(cIds.length) await batchDeleteDocs(CLIENTS_COLLECTION, cIds);
+        if(fIds.length) await batchDeleteDocs(FOLDERS_COLLECTION, fIds);
+        clearSelection();
+        statusLine.textContent = "База очищена";
+      } catch(err){
+        alert("Ошибка: " + (err?.message || err));
+      }
+    });
+
     // --- Rendering ---
     function setEmptyState(kind){
       // kind: "noItems" | "noResults"
@@ -1676,7 +1892,7 @@
           <td>
             <input class="chk" type="checkbox" data-sel="${escapeHtml(id)}" />
           </td>
-          <td class="mono">${escapeHtml(fmt(dt))}</td>
+          <td class="mono relTime" data-time="${dt ? dt.getTime() : ''}" title="${escapeHtml(fmt(dt))}">${escapeHtml(fmtRelative(dt))}</td>
           <td>
             <div><b>${escapeHtml(clientName)}</b></div>
             <div class="hint mono">ID: ${escapeHtml(shortLabelFromId(id))}</div>
@@ -1719,7 +1935,7 @@
               <div style="width:36px; height:36px; border-radius:14px; border:1px solid var(--line); background:rgba(255,255,255,.05); display:flex; align-items:center; justify-content:center; font-weight:900; flex:0 0 auto">${escapeHtml(initial)}</div>
               <div class="clientTitle" style="min-width:0">
                 <div class="main" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis">${escapeHtml(clientName)}</div>
-                <div class="sub">${escapeHtml(fmt(dt))} • <span class="mono">${escapeHtml(shortLabelFromId(id))}</span></div>
+                <div class="sub"><span class="relTime" data-time="${dt ? dt.getTime() : ''}" title="${escapeHtml(fmt(dt))}">${escapeHtml(fmtRelative(dt))}</span> • <span class="mono">${escapeHtml(shortLabelFromId(id))}</span></div>
               </div>
             </div>
             <div style="display:flex; align-items:center; gap:10px;">
@@ -2024,6 +2240,14 @@
       }, (err) => {
         statusLine.innerHTML = `<span class="dangerText">❌ ${escapeHtml(err?.message || err)}</span>`;
       });
+
+      setInterval(() => {
+        document.querySelectorAll('.relTime[data-time]').forEach(el => {
+          const t = Number(el.dataset.time);
+          if(!t) return;
+          el.textContent = fmtRelative(new Date(t));
+        });
+      }, 1000);
     });
   </script>
 </body>
